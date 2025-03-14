@@ -1,10 +1,10 @@
 [
   "",
   "Identifier.ObjectCode",
-  "Identifier.Xmax",
-  "Identifier.CentroidX",
-  "Identifier.Ymin",
   "Identifier.Xmin",
+  "Identifier.Ymin",
+  "Identifier.Xmax",
   "Identifier.Ymax",
+  "Identifier.CentroidX",
   "Identifier.CentroidY"
 ]
