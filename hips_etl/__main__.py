@@ -11,12 +11,12 @@ def main():
 
     data_dir = Path(sys.argv[1])
     try:
-        validate_hips_data_dir(data_dir)
-    except ValueError as e:
-        print(f"Error: {e}", file=sys.stderr)
-    else:
-        print("Data directory is valid.")
+        success = validate_hips_data_dir(data_dir)
+        return 0 if success else 1
+    except RuntimeError as e:
+        print(f"Fatal error: {e}", file=sys.stderr)
+        return 1
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

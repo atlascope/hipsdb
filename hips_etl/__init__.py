@@ -57,11 +57,7 @@ def get_object_mapping(rows: list[dict]) -> dict[int, dict] | None:
     """Construct a mapping from ObjectCode to row for a list of dictionaries."""
     mapping = {int(float(row['Identifier.ObjectCode'])): row for row in rows}
 
-    if len(mapping) != len(rows):
-        return None
-        # raise ValueError("Duplicate ObjectCodes found in the data.")
-
-    return mapping
+    return mapping if len(mapping) == len(rows) else None
 
 
 def convert_intfloat(value: str) -> int:
@@ -74,10 +70,10 @@ def convert_intfloat(value: str) -> int:
         floatval = float(value)
         intval = int(floatval)
         if floatval != intval:
-            raise ValueError(f"Value {value} is not a valid intfloat.")
+            print(f"Value {value} is not a valid intfloat.")
         return intval
     except (ValueError, TypeError) as e:
-        raise ValueError(f"Invalid intfloat value: {value}") from e
+        print(f"Invalid intfloat value: {value}")
 
 
 def convert_float(value: str, ints: list[bool]) -> float | None:
@@ -96,7 +92,7 @@ def convert_float(value: str, ints: list[bool]) -> float | None:
         ints.append(floatval == int(floatval))
         return floatval
     except (ValueError, TypeError) as e:
-        raise ValueError(f"Invalid float value: {value}") from e
+        print(f"Invalid float value: {value}")
 
 
 def convert_int(value: str) -> int:
@@ -104,7 +100,7 @@ def convert_int(value: str) -> int:
     try:
         return int(value)
     except (ValueError, TypeError) as e:
-        raise ValueError(f"Invalid int value: {value}") from e
+        print(f"Invalid int value: {value}")
 
 
 def type_convert_rows(rows: list[dict], type: Literal["meta", "props"]) -> list[dict]:
@@ -129,18 +125,17 @@ def type_convert_rows(rows: list[dict], type: Literal["meta", "props"]) -> list[
                 case "enum":
                     enum_values = types["enum_values"][type].get(key)
                     if enum_values is None:
-                        raise ValueError(f"Missing enum values for field '{key}'.")
+                        raise RuntimeError(f"Field '{key}' is not registered as an enum type.")
 
                     if value not in enum_values:
-                        raise ValueError(f"Invalid enum value '{value}' for field '{key}'.")
-                    pass
+                        print(f"Invalid enum value '{value}' for field '{key}'.")
                 case _:
-                    raise ValueError(f"Unknown type '{conversion_type}' in {type} types.")
+                    raise RuntimeError(f"Unknown type '{conversion_type}' in {type} types.")
             row[key] = value
 
     for key in floatint:
         if False not in floatint[key]:
-            raise ValueError(f"Field '{key}' contains only int values (should it be a floatint?).")
+            print(f"Float field '{key}' contains only int values. (Should it be a floatint?)")
 
     return rows
 
@@ -155,26 +150,26 @@ def type_convert_props(rows: list[dict]) -> list[dict]:
     return type_convert_rows(rows, "props")
 
 
-def validate_hips_data_dir(data_dir: Path):
+def validate_hips_data_dir(data_dir: Path) -> bool:
     """Validate the data in a hips data directory."""
 
     # Check that the data directory exists and is a directory.
     if not dir_exists(data_dir):
-        raise ValueError(f"No such directory {data_dir}.")
+        print(f"No such directory {data_dir}.")
+        return False
 
     # Check that the data directory contains `nucleiMeta` and `nucleiProps` subdirectories.
     meta_dir = data_dir / "nucleiMeta"
-    if not dir_exists(meta_dir):
-        raise ValueError(f"Directory {meta_dir} is missing.")
-
     props_dir = data_dir / "nucleiProps"
-    if not dir_exists(props_dir):
-        raise ValueError(f"Directory {props_dir} is missing.")
+    if not dir_exists(meta_dir) or not dir_exists(props_dir):
+        print(f"Subdirectories {meta_dir} and {props_dir} must both exist.")
+        return False
 
     # Make sure that each subdirectory contains the same set of files.
     filenames = check_same_filenames(meta_dir, props_dir)
     if filenames is None:
-        raise ValueError(f"Files in {meta_dir} and {props_dir} do not match.")
+        print(f"Files in {meta_dir} and {props_dir} do not match.")
+        return False
 
     # Validate each file in the directories.
     for filename in filenames:
@@ -183,20 +178,22 @@ def validate_hips_data_dir(data_dir: Path):
         # Check that the filename matches the expected pattern.
         match = csv_filename_pattern.match(filename)
         if not match:
-            raise ValueError(f"Filename {filename} does not match the pattern.")
+            print(f"Filename {filename} does not match the pattern.")
 
         # Check that the case name matches the directory name.
         if match.group('case_name') != data_dir.name:
-            raise ValueError(f"Case name for {filename} does not match directory name {data_dir.name}.")
+            print(f"Case name for {filename} does not match directory name {data_dir.name}.")
 
         # Read the CSV files and check that the fields match the expected fields.
         meta_rows, meta_fields = read_csv(meta_dir / filename)
         if not fields_match(meta_fields, common_fields | meta_only_fields):
-            raise ValueError(f"Meta fields for {filename} do not match expected fields.")
+            print(f"Meta fields for {filename} do not match expected fields.")
+            return False
 
         props_rows, props_fields = read_csv(props_dir / filename)
         if not fields_match(props_fields, common_fields | props_only_fields):
-            raise ValueError(f"Props fields for {filename} do not match expected fields.")
+            print(f"Props fields for {filename} do not match expected fields.")
+            return False
 
         meta_rows = type_convert_meta(meta_rows)
         props_rows = type_convert_props(props_rows)
@@ -204,15 +201,18 @@ def validate_hips_data_dir(data_dir: Path):
         # Construct a mapping from ObjectCode to row for both meta and props.
         meta_dict = get_object_mapping(meta_rows)
         if meta_dict is None:
-            raise ValueError(f"Duplicate ObjectCodes found in meta data for {filename}.")
+            print(f"Duplicate ObjectCodes found in meta data for {filename}.")
+            return False
 
         props_dict = get_object_mapping(props_rows)
         if props_dict is None:
-            raise ValueError(f"Duplicate ObjectCodes found in props data for {filename}.")
+            print(f"Duplicate ObjectCodes found in props data for {filename}.")
+            return False
 
         # Check that the ObjectCodes in meta and props match.
         if set(meta_dict.keys()) != set(props_dict.keys()):
-            raise ValueError(f"ObjectCodes in {filename} do not match between meta and props.")
+            print(f"ObjectCodes in {filename} do not match between meta and props.")
+            return False
 
         # Check the data integrity properties between meta and props.
         for id in meta_dict.keys():
@@ -221,12 +221,15 @@ def validate_hips_data_dir(data_dir: Path):
 
             # Check that the [X|Y]min values match.
             if meta['Identifier.Xmin'] != props['Identifier.Xmin']:
-                raise ValueError(f"Xmin values do not match for ObjectCode {id} in {filename}.")
+                print(f"Xmin values do not match for ObjectCode {id} in {filename}.")
             if meta['Identifier.Ymin'] != props['Identifier.Ymin']:
-                raise ValueError(f"Ymin values do not match for ObjectCode {id} in {filename}.")
+                print(f"Ymin values do not match for ObjectCode {id} in {filename}.")
 
             # Check the the [X|Y]max values are off-by-one.
             if meta['Identifier.Xmax'] != props['Identifier.Xmax'] - 1:
-                raise ValueError(f"Xmax values do not match for ObjectCode {id} in {filename}.")
+                print(f"Xmax values do not match for ObjectCode {id} in {filename}.")
             if meta['Identifier.Ymax'] != props['Identifier.Ymax'] - 1:
-                raise ValueError(f"Ymax values do not match for ObjectCode {id} in {filename}.")
+                print(f"Ymax values do not match for ObjectCode {id} in {filename}.")
+
+    print("Data directory is valid.")
+    return True
