@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 import re
 
+from typing import Literal
+
 
 csv_filename_pattern = re.compile(r'^(?P<case_name>.*)_roi-(?P<roi>[0-9]+)_left-(?P<left>[0-9]+)_top-(?P<top>[0-9]+)_right-(?P<right>[0-9]+)_bottom-(?P<bottom>[0-9]+)\.csv$')
 
@@ -15,6 +17,9 @@ with open(importlib.resources.files(__package__) / "fields" / "meta_only.json") 
 
 with open(importlib.resources.files(__package__) / "fields" / "props_only.json") as f:
     props_only_fields = set(json.load(f))
+
+with open(importlib.resources.files(__package__) / "fields" / "types.json") as f:
+    types = json.load(f)
 
 
 def dir_exists(directory: Path) -> bool:
@@ -57,6 +62,92 @@ def get_object_mapping(rows: list[dict]) -> dict[int, dict] | None:
         # raise ValueError("Duplicate ObjectCodes found in the data.")
 
     return mapping
+
+
+def convert_intfloat(value: str) -> int:
+    """
+    Convert a string to an integer, raising an exception for bad input.
+
+    `value` is a string encoding an integer value as a floating point value.
+    """
+    try:
+        floatval = float(value)
+        intval = int(floatval)
+        if floatval != intval:
+            raise ValueError(f"Value {value} is not a valid intfloat.")
+        return intval
+    except (ValueError, TypeError) as e:
+        raise ValueError(f"Invalid intfloat value: {value}") from e
+
+
+def convert_float(value: str, ints: list[bool]) -> float | None:
+    """
+    Convert a string to a float, raising an exception for bad input.
+
+    This function also tracks whether the float value is an integer over
+    multiple invocations with the intent of determining whether the field
+    should be considered an intfloat instead.
+    """
+    try:
+        # TODO: handle missing values in a better way.
+        if value == "":
+            return None
+        floatval = float(value)
+        ints.append(floatval == int(floatval))
+        return floatval
+    except (ValueError, TypeError) as e:
+        raise ValueError(f"Invalid float value: {value}") from e
+
+
+def convert_int(value: str) -> int:
+    """Convert a string to an integer, raising an exception for bad input."""
+    try:
+        return int(value)
+    except (ValueError, TypeError) as e:
+        raise ValueError(f"Invalid int value: {value}") from e
+
+
+def type_convert_rows(rows: list[dict], type: Literal["meta", "props"]) -> list[dict]:
+    """Convert the raw rows to a properly typed rows."""
+    typemap = types[type]
+    floatint = {}
+    for row in rows:
+        for key in row:
+            value = row[key]
+            conversion_type = typemap.get(key)
+            match conversion_type:
+                case "int":
+                    value = convert_int(value)
+                case "intfloat":
+                    value = convert_intfloat(value)
+                case "float":
+                    floatints = floatint.setdefault(key, [])
+                    value = convert_float(value, floatints)
+                case "string":
+                    # String data needs no conversion.
+                    pass
+                case "enum":
+                    # TODO: Handle enum conversion.
+                    pass
+                case _:
+                    raise ValueError(f"Unknown type '{conversion_type}' in {type} types.")
+            row[key] = value
+
+    for key in floatint:
+        if False not in floatint[key]:
+            raise ValueError(f"Field '{key}' contains only int values (should it be a floatint?).")
+
+    return rows
+
+
+def type_convert_meta(rows: list[dict]) -> list[dict]:
+    """Convert the raw meta rows to a properly typed rows."""
+    return type_convert_rows(rows, "meta")
+
+
+def type_convert_props(rows: list[dict]) -> list[dict]:
+    """Convert the raw props rows to a properly typed rows."""
+    return type_convert_rows(rows, "props")
 
 
 def validate_hips_data_dir(data_dir: Path):
@@ -102,6 +193,9 @@ def validate_hips_data_dir(data_dir: Path):
         if not fields_match(props_fields, common_fields | props_only_fields):
             raise ValueError(f"Props fields for {filename} do not match expected fields.")
 
+        meta_rows = type_convert_meta(meta_rows)
+        props_rows = type_convert_props(props_rows)
+
         # Construct a mapping from ObjectCode to row for both meta and props.
         meta_dict = get_object_mapping(meta_rows)
         if meta_dict is None:
@@ -121,13 +215,13 @@ def validate_hips_data_dir(data_dir: Path):
             props = props_dict[id]
 
             # Check that the [X|Y]min values match.
-            if float(meta['Identifier.Xmin']) != float(props['Identifier.Xmin']):
+            if meta['Identifier.Xmin'] != props['Identifier.Xmin']:
                 raise ValueError(f"Xmin values do not match for ObjectCode {id} in {filename}.")
-            if float(meta['Identifier.Ymin']) != float(props['Identifier.Ymin']):
+            if meta['Identifier.Ymin'] != props['Identifier.Ymin']:
                 raise ValueError(f"Ymin values do not match for ObjectCode {id} in {filename}.")
 
             # Check the the [X|Y]max values are off-by-one.
-            if float(meta['Identifier.Xmax']) != float(props['Identifier.Xmax']) - 1:
+            if meta['Identifier.Xmax'] != props['Identifier.Xmax'] - 1:
                 raise ValueError(f"Xmax values do not match for ObjectCode {id} in {filename}.")
-            if float(meta['Identifier.Ymax']) != float(props['Identifier.Ymax']) - 1:
+            if meta['Identifier.Ymax'] != props['Identifier.Ymax'] - 1:
                 raise ValueError(f"Ymax values do not match for ObjectCode {id} in {filename}.")
