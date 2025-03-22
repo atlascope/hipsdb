@@ -127,7 +127,12 @@ def type_convert_rows(rows: list[dict], type: Literal["meta", "props"]) -> list[
                     # String data needs no conversion.
                     pass
                 case "enum":
-                    # TODO: Handle enum conversion.
+                    enum_values = types["enum_values"][type].get(key)
+                    if enum_values is None:
+                        raise ValueError(f"Missing enum values for field '{key}'.")
+
+                    if value not in enum_values:
+                        raise ValueError(f"Invalid enum value '{value}' for field '{key}'.")
                     pass
                 case _:
                     raise ValueError(f"Unknown type '{conversion_type}' in {type} types.")

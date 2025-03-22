@@ -187,5 +187,43 @@
         "Cytoplasm.Haralick.IMC1.Range": "float",
         "Cytoplasm.Haralick.IMC2.Mean": "float",
         "Cytoplasm.Haralick.IMC2.Range": "float"
+    },
+    "enum_values": {
+        "meta": {
+            "Classif.StandardClass": [
+                "ActiveStromalCellNOS",
+                "ActiveTILsCell",
+                "CancerEpithelium",
+                "NormalEpithelium",
+                "OtherCell",
+                "StromalCellNOS",
+                "TILsCell",
+                "UnknownOrAmbiguousCell"
+            ],
+            "Classif.SuperClass": [
+                "AmbiguousSuperclass",
+                "EpithelialSuperclass",
+                "StromalSuperclass",
+                "TILsSuperclass"
+            ],
+            "Unconstrained.Classif.StandardClass": [
+                "ActiveStromalCellNOS",
+                "ActiveTILsCell",
+                "BACKGROUND",
+                "CancerEpithelium",
+                "NormalEpithelium",
+                "StromalCellNOS",
+                "TILsCell",
+                "UnknownOrAmbiguousCell"
+            ],
+            "Unconstrained.Classif.SuperClass": [
+                "AmbiguousSuperclass",
+                "BACKGROUND",
+                "EpithelialSuperclass",
+                "StromalSuperclass",
+                "TILsSuperclass"
+            ]
+        },
+        "props": {}
     }
 }
