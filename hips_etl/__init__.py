@@ -1,11 +1,15 @@
 import csv
 import importlib.resources
 import json
+import logging
 from pathlib import Path
 import re
 
 from typing import Literal
 
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO, format='[%(name)s/%(levelname)s] %(message)s')
 
 csv_filename_pattern = re.compile(r'^(?P<case_name>.*)_roi-(?P<roi>[0-9]+)_left-(?P<left>[0-9]+)_top-(?P<top>[0-9]+)_right-(?P<right>[0-9]+)_bottom-(?P<bottom>[0-9]+)\.csv$')
 
@@ -70,10 +74,10 @@ def convert_intfloat(value: str) -> int:
         floatval = float(value)
         intval = int(floatval)
         if floatval != intval:
-            print(f"Value {value} is not a valid intfloat.")
+            logger.warning(f"Value {value} is not a valid intfloat.")
         return intval
     except (ValueError, TypeError) as e:
-        print(f"Invalid intfloat value: {value}")
+        logger.warning(f"Invalid intfloat value: {value}")
 
 
 def convert_float(value: str, ints: list[bool]) -> float | None:
@@ -92,7 +96,7 @@ def convert_float(value: str, ints: list[bool]) -> float | None:
         ints.append(floatval == int(floatval))
         return floatval
     except (ValueError, TypeError) as e:
-        print(f"Invalid float value: {value}")
+        logger.warning(f"Invalid float value: {value}")
 
 
 def convert_int(value: str) -> int:
@@ -100,7 +104,7 @@ def convert_int(value: str) -> int:
     try:
         return int(value)
     except (ValueError, TypeError) as e:
-        print(f"Invalid int value: {value}")
+        logger.warning(f"Invalid int value: {value}")
 
 
 def type_convert_rows(rows: list[dict], type: Literal["meta", "props"]) -> list[dict]:
@@ -128,14 +132,14 @@ def type_convert_rows(rows: list[dict], type: Literal["meta", "props"]) -> list[
                         raise RuntimeError(f"Field '{key}' is not registered as an enum type.")
 
                     if value not in enum_values:
-                        print(f"Invalid enum value '{value}' for field '{key}'.")
+                        logger.warning(f"Invalid enum value '{value}' for field '{key}'.")
                 case _:
                     raise RuntimeError(f"Unknown type '{conversion_type}' in {type} types.")
             row[key] = value
 
     for key in floatint:
         if False not in floatint[key]:
-            print(f"Float field '{key}' contains only int values. (Should it be a floatint?)")
+            logger.warning(f"Float field '{key}' contains only int values. (Should it be a floatint?)")
 
     return rows
 
@@ -155,44 +159,44 @@ def validate_hips_data_dir(data_dir: Path) -> bool:
 
     # Check that the data directory exists and is a directory.
     if not dir_exists(data_dir):
-        print(f"No such directory {data_dir}.")
+        logger.critical(f"No such directory {data_dir}.")
         return False
 
     # Check that the data directory contains `nucleiMeta` and `nucleiProps` subdirectories.
     meta_dir = data_dir / "nucleiMeta"
     props_dir = data_dir / "nucleiProps"
     if not dir_exists(meta_dir) or not dir_exists(props_dir):
-        print(f"Subdirectories {meta_dir} and {props_dir} must both exist.")
+        logger.critical(f"Subdirectories {meta_dir} and {props_dir} must both exist.")
         return False
 
     # Make sure that each subdirectory contains the same set of files.
     filenames = check_same_filenames(meta_dir, props_dir)
     if filenames is None:
-        print(f"Files in {meta_dir} and {props_dir} do not match.")
+        logger.critical(f"Files in {meta_dir} and {props_dir} do not match.")
         return False
 
     # Validate each file in the directories.
     for filename in filenames:
-        print(f'Validating {filename}...')
+        logger.info(f'Validating {filename}...')
 
         # Check that the filename matches the expected pattern.
         match = csv_filename_pattern.match(filename)
         if not match:
-            print(f"Filename {filename} does not match the pattern.")
+            logger.warning(f"Filename {filename} does not match the pattern.")
 
         # Check that the case name matches the directory name.
         if match.group('case_name') != data_dir.name:
-            print(f"Case name for {filename} does not match directory name {data_dir.name}.")
+            logger.warning(f"Case name for {filename} does not match directory name {data_dir.name}.")
 
         # Read the CSV files and check that the fields match the expected fields.
         meta_rows, meta_fields = read_csv(meta_dir / filename)
         if not fields_match(meta_fields, common_fields | meta_only_fields):
-            print(f"Meta fields for {filename} do not match expected fields.")
+            logger.error(f"Meta fields for {filename} do not match expected fields.")
             return False
 
         props_rows, props_fields = read_csv(props_dir / filename)
         if not fields_match(props_fields, common_fields | props_only_fields):
-            print(f"Props fields for {filename} do not match expected fields.")
+            logger.error(f"Props fields for {filename} do not match expected fields.")
             return False
 
         meta_rows = type_convert_meta(meta_rows)
@@ -201,17 +205,17 @@ def validate_hips_data_dir(data_dir: Path) -> bool:
         # Construct a mapping from ObjectCode to row for both meta and props.
         meta_dict = get_object_mapping(meta_rows)
         if meta_dict is None:
-            print(f"Duplicate ObjectCodes found in meta data for {filename}.")
+            logger.error(f"Duplicate ObjectCodes found in meta data for {filename}.")
             return False
 
         props_dict = get_object_mapping(props_rows)
         if props_dict is None:
-            print(f"Duplicate ObjectCodes found in props data for {filename}.")
+            logger.error(f"Duplicate ObjectCodes found in props data for {filename}.")
             return False
 
         # Check that the ObjectCodes in meta and props match.
         if set(meta_dict.keys()) != set(props_dict.keys()):
-            print(f"ObjectCodes in {filename} do not match between meta and props.")
+            logger.error(f"ObjectCodes in {filename} do not match between meta and props.")
             return False
 
         # Check the data integrity properties between meta and props.
@@ -221,15 +225,15 @@ def validate_hips_data_dir(data_dir: Path) -> bool:
 
             # Check that the [X|Y]min values match.
             if meta['Identifier.Xmin'] != props['Identifier.Xmin']:
-                print(f"Xmin values do not match for ObjectCode {id} in {filename}.")
+                logger.warning(f"Xmin values do not match for ObjectCode {id} in {filename}.")
             if meta['Identifier.Ymin'] != props['Identifier.Ymin']:
-                print(f"Ymin values do not match for ObjectCode {id} in {filename}.")
+                logger.warning(f"Ymin values do not match for ObjectCode {id} in {filename}.")
 
             # Check the the [X|Y]max values are off-by-one.
             if meta['Identifier.Xmax'] != props['Identifier.Xmax'] - 1:
-                print(f"Xmax values do not match for ObjectCode {id} in {filename}.")
+                logger.warning(f"Xmax values do not match for ObjectCode {id} in {filename}.")
             if meta['Identifier.Ymax'] != props['Identifier.Ymax'] - 1:
-                print(f"Ymax values do not match for ObjectCode {id} in {filename}.")
+                logger.warning(f"Ymax values do not match for ObjectCode {id} in {filename}.")
 
-    print("Data directory is valid.")
+    logger.info("Data directory is valid.")
     return True
