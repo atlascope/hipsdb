@@ -64,7 +64,7 @@ def get_object_mapping(rows: list[dict]) -> dict[int, dict] | None:
     return mapping if len(mapping) == len(rows) else None
 
 
-def convert_intfloat(value: str) -> int:
+def convert_intfloat(value: str) -> int | None:
     """
     Convert a string to an integer, raising an exception for bad input.
 
@@ -75,9 +75,11 @@ def convert_intfloat(value: str) -> int:
         intval = int(floatval)
         if floatval != intval:
             logger.warning(f"Value {value} is not a valid intfloat.")
+            return None
         return intval
     except (ValueError, TypeError) as e:
         logger.warning(f"Invalid intfloat value: {value}")
+        return None
 
 
 def convert_float(value: str, ints: list[bool]) -> float | None:
@@ -97,14 +99,16 @@ def convert_float(value: str, ints: list[bool]) -> float | None:
         return floatval
     except (ValueError, TypeError) as e:
         logger.warning(f"Invalid float value: {value}")
+        return None
 
 
-def convert_int(value: str) -> int:
+def convert_int(value: str) -> int | None:
     """Convert a string to an integer, raising an exception for bad input."""
     try:
         return int(value)
     except (ValueError, TypeError) as e:
         logger.warning(f"Invalid int value: {value}")
+        return None
 
 
 def type_convert_rows(rows: list[dict], type: Literal["meta", "props"]) -> list[dict]:
@@ -133,6 +137,7 @@ def type_convert_rows(rows: list[dict], type: Literal["meta", "props"]) -> list[
 
                     if value not in enum_values:
                         logger.warning(f"Invalid enum value '{value}' for field '{key}'.")
+                        value = None
                 case _:
                     raise RuntimeError(f"Unknown type '{conversion_type}' in {type} types.")
             row[key] = value
@@ -156,6 +161,8 @@ def type_convert_props(rows: list[dict]) -> list[dict]:
 
 def validate_hips_data_dir(data_dir: Path) -> bool:
     """Validate the data in a hips data directory."""
+
+    success = True
 
     # Check that the data directory exists and is a directory.
     if not dir_exists(data_dir):
@@ -183,10 +190,12 @@ def validate_hips_data_dir(data_dir: Path) -> bool:
         match = csv_filename_pattern.match(filename)
         if not match:
             logger.warning(f"Filename {filename} does not match the pattern.")
+            success = False
 
         # Check that the case name matches the directory name.
         if match.group('case_name') != data_dir.name:
             logger.warning(f"Case name for {filename} does not match directory name {data_dir.name}.")
+            success = False
 
         # Read the CSV files and check that the fields match the expected fields.
         meta_rows, meta_fields = read_csv(meta_dir / filename)
@@ -226,14 +235,21 @@ def validate_hips_data_dir(data_dir: Path) -> bool:
             # Check that the [X|Y]min values match.
             if meta['Identifier.Xmin'] != props['Identifier.Xmin']:
                 logger.warning(f"Xmin values do not match for ObjectCode {id} in {filename}.")
+                success = False
             if meta['Identifier.Ymin'] != props['Identifier.Ymin']:
                 logger.warning(f"Ymin values do not match for ObjectCode {id} in {filename}.")
+                success = False
 
             # Check the the [X|Y]max values are off-by-one.
             if meta['Identifier.Xmax'] != props['Identifier.Xmax'] - 1:
                 logger.warning(f"Xmax values do not match for ObjectCode {id} in {filename}.")
+                success = False
             if meta['Identifier.Ymax'] != props['Identifier.Ymax'] - 1:
                 logger.warning(f"Ymax values do not match for ObjectCode {id} in {filename}.")
+                success = False
 
-    logger.info("Data directory is valid.")
-    return True
+    if success:
+        logger.info("Data directory is valid.")
+    else:
+        logger.error("Data directory is invalid.")
+    return success
