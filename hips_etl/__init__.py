@@ -2,6 +2,7 @@ import csv
 import importlib.resources
 import json
 import logging
+import math
 from pathlib import Path
 import re
 
@@ -232,6 +233,17 @@ def validate_hips_data_dir(data_dir: Path) -> bool:
             meta = meta_dict[id]
             props = props_dict[id]
 
+            # Ensure no missing values in meta and props.
+            for key in meta:
+                if meta[key] is None:
+                    logger.error(f"meta[{id}][{key}] is missing.")
+                    success = False
+
+            for key in props:
+                if props[key] is None:
+                    logger.error(f"props[{id}][{key}] is missing.")
+                    success = False
+
             # Check that the [X|Y]min values match.
             if meta['Identifier.Xmin'] != props['Identifier.Xmin']:
                 logger.warning(f"Xmin values do not match for ObjectCode {id} in {filename}.")
@@ -246,6 +258,15 @@ def validate_hips_data_dir(data_dir: Path) -> bool:
                 success = False
             if meta['Identifier.Ymax'] != props['Identifier.Ymax'] - 1:
                 logger.warning(f"Ymax values do not match for ObjectCode {id} in {filename}.")
+                success = False
+
+            # Check for properly rounded centroid values.
+            if meta['Identifier.CentroidX'] != math.floor(props['Identifier.CentroidX']):
+                logger.warning(f"Identifier.CentroidX values do not match for ObjectCode {id}.")
+                success = False
+
+            if meta['Identifier.CentroidY'] != math.floor(props['Identifier.CentroidY']):
+                logger.warning(f"Identifier.CentroidY values do not match for ObjectCode {id}.")
                 success = False
 
     if success:
