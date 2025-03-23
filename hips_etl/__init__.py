@@ -8,9 +8,35 @@ import re
 
 from typing import Literal
 
+def initialize_logging() -> tuple[logging.Logger, logging.Formatter]:
+    class HipsFormatter(logging.Formatter):
+        def __init__(self, *args, **kwargs):
+            self.spacing = 0
+            super().__init__(*args, **kwargs)
 
-logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO, format='[%(name)s/%(levelname)s] %(message)s')
+        def format(self, record):
+            record.levelname = record.levelname.ljust(len('CRITICAL'))
+            record.msg = ' ' * self.spacing + record.msg
+            return super().format(record)
+
+        def indent(self):
+            self.spacing += 2
+
+        def dedent(self):
+            self.spacing -= 2
+            if self.spacing < 0:
+                self.spacing = 0
+
+    logger = logging.getLogger(__name__)
+    formatter = HipsFormatter('[%(name)s/%(levelname)s] %(message)s')
+    handler = logging.StreamHandler()
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
+
+    return logger, formatter
+
+logger, formatter = initialize_logging()
 
 csv_filename_pattern = re.compile(r'^(?P<case_name>.*)_roi-(?P<roi>[0-9]+)_left-(?P<left>[0-9]+)_top-(?P<top>[0-9]+)_right-(?P<right>[0-9]+)_bottom-(?P<bottom>[0-9]+)\.csv$')
 
@@ -185,7 +211,8 @@ def validate_hips_data_dir(data_dir: Path) -> bool:
 
     # Validate each file in the directories.
     for filename in filenames:
-        logger.info(f'Validating {filename}...')
+        logger.info(f'Validating {filename}')
+        formatter.indent()
 
         # Check that the filename matches the expected pattern.
         match = csv_filename_pattern.match(filename)
@@ -268,6 +295,8 @@ def validate_hips_data_dir(data_dir: Path) -> bool:
             if meta['Identifier.CentroidY'] != math.floor(props['Identifier.CentroidY']):
                 logger.warning(f"Identifier.CentroidY values do not match for ObjectCode {id}.")
                 success = False
+
+        formatter.dedent()
 
     if success:
         logger.info("Data directory is valid.")
