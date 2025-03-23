@@ -7,7 +7,7 @@ from hips_etl import validate_hips_data_dir
 def main():
     if len(sys.argv) != 2:
         print("Usage: python -m hips_etl <data_dir>", file=sys.stderr)
-        sys.exit(1)
+        return 1
 
     data_dir = Path(sys.argv[1])
     try:
