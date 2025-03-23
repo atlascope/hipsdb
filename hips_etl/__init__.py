@@ -5,18 +5,33 @@ import logging
 import math
 from pathlib import Path
 import re
-
+import sys
 from typing import Literal
 
+import blessings
+
 def initialize_logging() -> tuple[logging.Logger, logging.Formatter]:
+    term = blessings.Terminal()
     class HipsFormatter(logging.Formatter):
+        Colors = {
+            logging.DEBUG: term.green,
+            logging.INFO: term.blue,
+            logging.WARNING: term.yellow,
+            logging.ERROR: term.red,
+            logging.CRITICAL: term.bold_red,
+        }
+
         def __init__(self, *args, **kwargs):
             self.spacing = 0
+            self.supports_color = sys.stdout.isatty() and sys.stderr.isatty()
             super().__init__(*args, **kwargs)
 
         def format(self, record):
             record.levelname = record.levelname.ljust(len('CRITICAL'))
             record.msg = ' ' * self.spacing + record.msg
+            color = self.__class__.Colors.get(record.levelno, term.normal)
+            if self.supports_color:
+                record.msg = color(record.msg)
             return super().format(record)
 
         def indent(self):
