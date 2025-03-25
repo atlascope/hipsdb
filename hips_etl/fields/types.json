@@ -193,6 +193,7 @@
             "Classif.StandardClass": [
                 "ActiveStromalCellNOS",
                 "ActiveTILsCell",
+                "BACKGROUND",
                 "CancerEpithelium",
                 "NormalEpithelium",
                 "OtherCell",
@@ -202,7 +203,9 @@
             ],
             "Classif.SuperClass": [
                 "AmbiguousSuperclass",
+                "BACKGROUND",
                 "EpithelialSuperclass",
+                "OtherSuperclass",
                 "StromalSuperclass",
                 "TILsSuperclass"
             ],
