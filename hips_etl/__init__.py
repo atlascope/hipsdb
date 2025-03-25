@@ -303,7 +303,7 @@ def validate_hips_data_dir(data_dir: Path) -> bool:
                 logger.warning(f"meta[{id}][Ymin] and props[{id}][Ymin] do not match")
                 success = False
 
-            # Check the the [X|Y]max values are off-by-one.
+            # Check that the [X|Y]max values are off-by-one.
             if meta['Identifier.Xmax'] != props['Identifier.Xmax'] - 1:
                 logger.warning(f"meta[{id}][Xmax] and props[{id}][Xmax] are not off by one")
                 success = False
