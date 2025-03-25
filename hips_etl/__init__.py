@@ -55,14 +55,20 @@ logger, formatter = initialize_logging()
 
 csv_filename_pattern = re.compile(r'^(?P<case_name>.*)_roi-(?P<roi>[0-9]+)_left-(?P<left>[0-9]+)_top-(?P<top>[0-9]+)_right-(?P<right>[0-9]+)_bottom-(?P<bottom>[0-9]+)\.csv$')
 
-with open(importlib.resources.files(__package__) / "fields" / "common.json") as f:
-    common_fields = set(json.load(f))
 
-with open(importlib.resources.files(__package__) / "fields" / "meta_only.json") as f:
-    meta_only_fields = set(json.load(f))
+def get_json_fields(jsonfile: str) -> set[str]:
+    try:
+        with open(importlib.resources.files(__package__) / "fields" / jsonfile) as f:
+            fields = set(json.load(f))
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        logger.critical(f"Failed to load {jsonfile}: {e}")
+        sys.exit(1)
 
-with open(importlib.resources.files(__package__) / "fields" / "props_only.json") as f:
-    props_only_fields = set(json.load(f))
+    return fields
+
+common_fields = get_json_fields("common.json")
+meta_only_fields = get_json_fields("meta_only.json")
+props_only_fields = get_json_fields("props_only.json")
 
 with open(importlib.resources.files(__package__) / "fields" / "types.json") as f:
     types = json.load(f)
