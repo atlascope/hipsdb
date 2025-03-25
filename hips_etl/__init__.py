@@ -93,10 +93,13 @@ def read_csv(csv_file: Path) -> tuple[list[dict], list[str]]:
         return (list(reader), fields)
 
 
-# TODO: report which fields are missing instead of just returning False.
 def fields_match(fields: set, expected_fields: set) -> bool:
-    """Check if the fields in a CSV file match the expected fields."""
-    return fields == expected_fields
+    missing_fields = expected_fields - fields
+    extra_fields = fields - expected_fields
+    if missing_fields or extra_fields:
+        logger.error(f"Fields mismatch: missing {missing_fields}, extra {extra_fields}")
+        return False
+    return True
 
 
 def get_object_mapping(rows: list[dict]) -> dict[int, dict] | None:
