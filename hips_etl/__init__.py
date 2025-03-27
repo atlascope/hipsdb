@@ -162,7 +162,7 @@ def convert_int(value: str) -> int | None:
         return None
 
 
-def type_convert_rows(rows: list[dict], type: Literal["meta", "props"]) -> list[dict]:
+def type_convert_rows(rows: list[dict], type: Literal["meta", "props"]) -> list[dict] | None:
     """Convert the raw rows to a properly typed rows."""
     typemap = types[type]
     floatint = {}
@@ -184,13 +184,16 @@ def type_convert_rows(rows: list[dict], type: Literal["meta", "props"]) -> list[
                 case "enum":
                     enum_values = types["enum_values"][type].get(key)
                     if enum_values is None:
-                        raise RuntimeError(f"Field '{key}' is not registered as an enum type.")
+                        logger.critical(f"Field '{key}' is not registered as an enum type.")
+                        return None
 
                     if value not in enum_values:
                         logger.warning(f"Invalid enum value '{value}' for field '{key}'")
                         value = None
                 case _:
-                    raise RuntimeError(f"Unknown type '{conversion_type}' in {type} types.")
+                    logger.critical(f"Unknown type '{conversion_type}' in {type} types.")
+                    return None
+
             row[key] = value
 
     for key in floatint:
@@ -217,20 +220,20 @@ def validate_hips_data_dir(data_dir: Path) -> bool:
 
     # Check that the data directory exists and is a directory.
     if not dir_exists(data_dir):
-        logger.critical(f"No such directory {data_dir}")
+        logger.error(f"No such directory {data_dir}")
         return False
 
     # Check that the data directory contains `nucleiMeta` and `nucleiProps` subdirectories.
     meta_dir = data_dir / "nucleiMeta"
     props_dir = data_dir / "nucleiProps"
     if not dir_exists(meta_dir) or not dir_exists(props_dir):
-        logger.critical(f"Subdirectories {meta_dir} and {props_dir} must both exist")
+        logger.error(f"Subdirectories {meta_dir} and {props_dir} must both exist")
         return False
 
     # Make sure that each subdirectory contains the same set of files.
     filenames = check_same_filenames(meta_dir, props_dir)
     if filenames is None:
-        logger.critical(f"Files in {meta_dir} and {props_dir} do not match")
+        logger.error(f"Files in {meta_dir} and {props_dir} do not match")
         return False
 
     # Validate each file in the directories.
@@ -262,6 +265,9 @@ def validate_hips_data_dir(data_dir: Path) -> bool:
 
         meta_rows = type_convert_meta(meta_rows)
         props_rows = type_convert_props(props_rows)
+
+        if meta_rows is None or props_rows is None:
+            return False
 
         # Construct a mapping from ObjectCode to row for both meta and props.
         meta_dict = get_object_mapping(meta_rows)

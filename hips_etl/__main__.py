@@ -13,8 +13,8 @@ def main():
     try:
         success = validate_hips_data_dir(data_dir)
         return 0 if success else 1
-    except RuntimeError as e:
-        print(f"Fatal error: {e}", file=sys.stderr)
+    except Exception as e:
+        print(f"Unexpected error: {e}", file=sys.stderr)
         return 1
 
 
