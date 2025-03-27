@@ -1,7 +1,7 @@
 from pathlib import Path
 import sys
 
-from hips_etl import validate_hips_data_dir
+from hips_etl import validate_hips_dir
 
 
 def main():
@@ -11,7 +11,7 @@ def main():
 
     data_dir = Path(sys.argv[1])
     try:
-        success = validate_hips_data_dir(data_dir)
+        success = validate_hips_dir(data_dir)
         return 0 if success else 1
     except Exception as e:
         print(f"Unexpected error: {e}", file=sys.stderr)

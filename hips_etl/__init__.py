@@ -213,7 +213,7 @@ def type_convert_props(rows: list[dict]) -> list[dict]:
     return type_convert_rows(rows, "props")
 
 
-def validate_hips_data_dir(data_dir: Path) -> bool:
+def validate_hips_dir(data_dir: Path) -> bool:
     """Validate the data in a hips data directory."""
 
     success = True
