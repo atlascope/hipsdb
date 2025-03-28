@@ -1,5 +1,7 @@
 import importlib
-from pathlib import Path
+import math
+
+from hypothesis import given, strategies as st
 import hips_etl
 
 test_data_dir = importlib.resources.files("hips_etl") / "test_data"
@@ -126,3 +128,37 @@ def test_broken_checks(caplog):
     assert "meta[1][Ymax] and props[1][Ymax] are not off by one" in caplog.text
     assert "meta[2][Identifier.CentroidX] is not the floor of props[2][Identifier.CentroidX]" in caplog.text
     assert "meta[2][Identifier.CentroidY] is not the floor of props[2][Identifier.CentroidY]" in caplog.text
+
+
+@given(st.integers())
+def test_convert_int_good_inputs(n: int):
+    assert hips_etl.convert_int(str(n)) == n
+
+
+@given(st.text().filter(lambda s: not s.lstrip("-").isnumeric()))
+def test_convert_int_bad_inputs(s: str):
+    assert hips_etl.convert_int(s) is None
+
+
+@given(st.floats())
+def test_convert_float_good_inputs(x: float):
+    converted = hips_etl.convert_float(str(x), [])
+    if math.isnan(x):
+        assert math.isnan(converted)
+    else:
+        assert converted == x
+
+
+@given(st.text().filter(lambda s: not s.lstrip("-").lstrip("+").replace(".", "").isnumeric() and s.lower() not in ["inf", "-inf", "nan", "infinity", "-infinity"]))
+def test_convert_float_bad_inputs(s: str):
+    assert hips_etl.convert_float(s, []) is None
+
+
+@given(st.floats(allow_infinity=False, allow_nan=False).map(math.floor))
+def test_convert_intfloat_good_inputs(x: float):
+    assert hips_etl.convert_intfloat(str(x)) == x
+
+
+@given(st.floats().filter(lambda x: not x.is_integer()))
+def test_convert_intfloat_bad_inputs(x: float):
+    assert hips_etl.convert_intfloat(str(x)) is None

@@ -123,10 +123,11 @@ def convert_intfloat(value: str) -> int | None:
     """
     try:
         floatval = float(value)
-        intval = int(floatval)
-        if floatval != intval:
+
+        if math.isinf(floatval) or math.isnan(floatval) or (intval := int(floatval)) != floatval:
             logger.warning(f"Value {value} is not a valid intfloat")
             return None
+
         return intval
     except (ValueError, TypeError) as e:
         logger.warning(f"Invalid intfloat value: {value}")
@@ -146,7 +147,8 @@ def convert_float(value: str, ints: list[bool]) -> float | None:
         if value == "":
             return None
         floatval = float(value)
-        ints.append(floatval == int(floatval))
+        if not math.isinf(floatval) and not math.isnan(floatval):
+            ints.append(floatval == int(floatval))
         return floatval
     except (ValueError, TypeError) as e:
         logger.warning(f"Invalid float value: {value}")
