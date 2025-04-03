@@ -10,8 +10,10 @@ from typing import Literal
 
 import blessings
 
+
 def initialize_logging() -> tuple[logging.Logger, logging.Formatter]:
     term = blessings.Terminal()
+
     class HipsFormatter(logging.Formatter):
         Colors = {
             logging.DEBUG: term.green,
@@ -27,8 +29,8 @@ def initialize_logging() -> tuple[logging.Logger, logging.Formatter]:
             super().__init__(*args, **kwargs)
 
         def format(self, record):
-            record.levelname = record.levelname.ljust(len('CRITICAL'))
-            record.msg = ' ' * self.spacing + record.msg
+            record.levelname = record.levelname.ljust(len("CRITICAL"))
+            record.msg = " " * self.spacing + record.msg
             color = self.__class__.Colors.get(record.levelno, term.normal)
             if self.supports_color:
                 record.msg = color(record.msg)
@@ -43,7 +45,7 @@ def initialize_logging() -> tuple[logging.Logger, logging.Formatter]:
                 self.spacing = 0
 
     logger = logging.getLogger(__name__)
-    formatter = HipsFormatter('[%(name)s/%(levelname)s] %(message)s')
+    formatter = HipsFormatter("[%(name)s/%(levelname)s] %(message)s")
     handler = logging.StreamHandler()
     handler.setFormatter(formatter)
     logger.addHandler(handler)
@@ -51,9 +53,12 @@ def initialize_logging() -> tuple[logging.Logger, logging.Formatter]:
 
     return logger, formatter
 
+
 logger, formatter = initialize_logging()
 
-csv_filename_pattern = re.compile(r'^(?P<image>.*)_roi-(?P<roi>[0-9]+)_left-(?P<left>[0-9]+)_top-(?P<top>[0-9]+)_right-(?P<right>[0-9]+)_bottom-(?P<bottom>[0-9]+)\.csv$')
+csv_filename_pattern = re.compile(
+    r"^(?P<image>.*)_roi-(?P<roi>[0-9]+)_left-(?P<left>[0-9]+)_top-(?P<top>[0-9]+)_right-(?P<right>[0-9]+)_bottom-(?P<bottom>[0-9]+)\.csv$"
+)
 
 
 def get_json_fields(jsonfile: str) -> set[str]:
@@ -65,6 +70,7 @@ def get_json_fields(jsonfile: str) -> set[str]:
         sys.exit(1)
 
     return fields
+
 
 common_fields = get_json_fields("common.json")
 meta_only_fields = get_json_fields("meta_only.json")
@@ -110,7 +116,7 @@ def fields_match(fields: set, expected_fields: set) -> bool:
 
 def get_object_mapping(rows: list[dict]) -> dict[int, dict] | None:
     """Construct a mapping from ObjectCode to row for a list of dictionaries."""
-    mapping = {int(float(row['Identifier.ObjectCode'])): row for row in rows}
+    mapping = {int(float(row["Identifier.ObjectCode"])): row for row in rows}
 
     return mapping if len(mapping) == len(rows) else None
 
@@ -124,12 +130,16 @@ def convert_intfloat(value: str) -> int | None:
     try:
         floatval = float(value)
 
-        if math.isinf(floatval) or math.isnan(floatval) or (intval := int(floatval)) != floatval:
+        if (
+            math.isinf(floatval)
+            or math.isnan(floatval)
+            or (intval := int(floatval)) != floatval
+        ):
             logger.warning(f"Value {value} is not a valid intfloat")
             return None
 
         return intval
-    except (ValueError, TypeError) as e:
+    except (ValueError, TypeError):
         logger.warning(f"Invalid intfloat value: {value}")
         return None
 
@@ -150,7 +160,7 @@ def convert_float(value: str, ints: list[bool]) -> float | None:
         if not math.isinf(floatval) and not math.isnan(floatval):
             ints.append(floatval == int(floatval))
         return floatval
-    except (ValueError, TypeError) as e:
+    except (ValueError, TypeError):
         logger.warning(f"Invalid float value: {value}")
         return None
 
@@ -159,12 +169,14 @@ def convert_int(value: str) -> int | None:
     """Convert a string to an integer, raising an exception for bad input."""
     try:
         return int(value)
-    except (ValueError, TypeError) as e:
+    except (ValueError, TypeError):
         logger.warning(f"Invalid int value: {value}")
         return None
 
 
-def type_convert_rows(rows: list[dict], type: Literal["meta", "props"]) -> list[dict] | None:
+def type_convert_rows(
+    rows: list[dict], type: Literal["meta", "props"]
+) -> list[dict] | None:
     """Convert the raw rows to a properly typed rows."""
     typemap = types[type]
     floatint = {}
@@ -186,21 +198,29 @@ def type_convert_rows(rows: list[dict], type: Literal["meta", "props"]) -> list[
                 case "enum":
                     enum_values = types["enum_values"][type].get(key)
                     if enum_values is None:
-                        logger.critical(f"Field '{key}' is not registered as an enum type.")
+                        logger.critical(
+                            f"Field '{key}' is not registered as an enum type."
+                        )
                         return None
 
                     if value not in enum_values:
-                        logger.warning(f"Invalid enum value '{value}' for field '{key}'")
+                        logger.warning(
+                            f"Invalid enum value '{value}' for field '{key}'"
+                        )
                         value = None
                 case _:
-                    logger.critical(f"Unknown type '{conversion_type}' in {type} types.")
+                    logger.critical(
+                        f"Unknown type '{conversion_type}' in {type} types."
+                    )
                     return None
 
             row[key] = value
 
     for key in floatint:
         if False not in floatint[key]:
-            logger.warning(f"Float field '{key}' contains only int values (should it be a floatint?)")
+            logger.warning(
+                f"Float field '{key}' contains only int values (should it be a floatint?)"
+            )
 
     return rows
 
@@ -229,18 +249,18 @@ def validate_hips_dir(data_dir: Path) -> bool:
     meta_dir = data_dir / "nucleiMeta"
     props_dir = data_dir / "nucleiProps"
     if not dir_exists(meta_dir) or not dir_exists(props_dir):
-        logger.error(f"Subdirectories nucleiMeta and nucleiProps must both exist")
+        logger.error("Subdirectories nucleiMeta and nucleiProps must both exist")
         return False
 
     # Make sure that each subdirectory contains the same set of files.
     filenames = check_same_filenames(meta_dir, props_dir)
     if filenames is None:
-        logger.error(f"Files in nucleiMeta and nucleiProps do not match")
+        logger.error("Files in nucleiMeta and nucleiProps do not match")
         return False
 
     # Validate each file in the directories.
     for filename in filenames:
-        logger.info(f'Validating {filename}')
+        logger.info(f"Validating {filename}")
         formatter.indent()
 
         # Check that the filename matches the expected pattern.
@@ -251,8 +271,10 @@ def validate_hips_dir(data_dir: Path) -> bool:
             continue
 
         # Check that the case name matches the directory name.
-        if match.group('image') != data_dir.name:
-            logger.warning(f"Image name for {filename} does not match directory name {data_dir.name}")
+        if match.group("image") != data_dir.name:
+            logger.warning(
+                f"Image name for {filename} does not match directory name {data_dir.name}"
+            )
             success = False
 
         # Read the CSV files and check that the fields match the expected fields.
@@ -285,7 +307,9 @@ def validate_hips_dir(data_dir: Path) -> bool:
 
         # Check that the ObjectCodes in meta and props match.
         if set(meta_dict.keys()) != set(props_dict.keys()):
-            logger.error(f"ObjectCodes in {filename} do not match between meta and props")
+            logger.error(
+                f"ObjectCodes in {filename} do not match between meta and props"
+            )
             return False
 
         # Check the data integrity properties between meta and props.
@@ -305,28 +329,40 @@ def validate_hips_dir(data_dir: Path) -> bool:
                     success = False
 
             # Check that the [X|Y]min values match.
-            if meta['Identifier.Xmin'] != props['Identifier.Xmin']:
+            if meta["Identifier.Xmin"] != props["Identifier.Xmin"]:
                 logger.warning(f"meta[{id}][Xmin] and props[{id}][Xmin] do not match")
                 success = False
-            if meta['Identifier.Ymin'] != props['Identifier.Ymin']:
+            if meta["Identifier.Ymin"] != props["Identifier.Ymin"]:
                 logger.warning(f"meta[{id}][Ymin] and props[{id}][Ymin] do not match")
                 success = False
 
             # Check that the [X|Y]max values are off-by-one.
-            if meta['Identifier.Xmax'] != props['Identifier.Xmax'] - 1:
-                logger.warning(f"meta[{id}][Xmax] and props[{id}][Xmax] are not off by one")
+            if meta["Identifier.Xmax"] != props["Identifier.Xmax"] - 1:
+                logger.warning(
+                    f"meta[{id}][Xmax] and props[{id}][Xmax] are not off by one"
+                )
                 success = False
-            if meta['Identifier.Ymax'] != props['Identifier.Ymax'] - 1:
-                logger.warning(f"meta[{id}][Ymax] and props[{id}][Ymax] are not off by one")
+            if meta["Identifier.Ymax"] != props["Identifier.Ymax"] - 1:
+                logger.warning(
+                    f"meta[{id}][Ymax] and props[{id}][Ymax] are not off by one"
+                )
                 success = False
 
             # Check for properly rounded centroid values.
-            if meta['Identifier.CentroidX'] != math.floor(props['Identifier.CentroidX']):
-                logger.warning(f"meta[{id}][Identifier.CentroidX] is not the floor of props[{id}][Identifier.CentroidX]")
+            if meta["Identifier.CentroidX"] != math.floor(
+                props["Identifier.CentroidX"]
+            ):
+                logger.warning(
+                    f"meta[{id}][Identifier.CentroidX] is not the floor of props[{id}][Identifier.CentroidX]"
+                )
                 success = False
 
-            if meta['Identifier.CentroidY'] != math.floor(props['Identifier.CentroidY']):
-                logger.warning(f"meta[{id}][Identifier.CentroidY] is not the floor of props[{id}][Identifier.CentroidY]")
+            if meta["Identifier.CentroidY"] != math.floor(
+                props["Identifier.CentroidY"]
+            ):
+                logger.warning(
+                    f"meta[{id}][Identifier.CentroidY] is not the floor of props[{id}][Identifier.CentroidY]"
+                )
                 success = False
 
         formatter.dedent()
