@@ -320,15 +320,23 @@ def validate_hips_dir(data_dir: Path, skip_missing: bool = False) -> bool:
             # Ensure no missing values in meta and props.
             for key in meta:
                 if meta[key] is None:
-                    logger.error(f"meta[{id}][{key}] is missing")
                     if not skip_missing:
+                        logger.error(f"meta[{id}][{key}] is missing")
                         success = False
+                    else:
+                        logger.warning(
+                            f"meta[{id}][{key}] is missing (skipping this record)"
+                        )
 
             for key in props:
                 if props[key] is None:
-                    logger.error(f"props[{id}][{key}] is missing")
                     if not skip_missing:
+                        logger.error(f"props[{id}][{key}] is missing")
                         success = False
+                    else:
+                        logger.warning(
+                            f"props[{id}][{key}] is missing (skipping this record)"
+                        )
 
             # Check that the [X|Y]min values match.
             if meta["Identifier.Xmin"] != props["Identifier.Xmin"]:

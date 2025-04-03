@@ -1,6 +1,7 @@
 asgiref==3.8.1
 attrs==25.3.0
 blessings==1.7
+click==8.1.8
 Django==5.1.7
 exceptiongroup==1.2.2
 hypothesis==6.130.5
