@@ -1,4 +1,6 @@
 asgiref==3.8.1
+blessings==1.7
 Django==5.1.7
+six==1.17.0
 sqlparse==0.5.3
 typing_extensions==4.12.2
