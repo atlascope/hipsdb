@@ -14,3 +14,7 @@ A Django app for storing and serving HiPS data
 To validate a HiPS data directory, you can run the validator as a Python script
 with `python -m hips_etl`. That invocation will show a usage message; to
 validate a directory, supply a data directory as an argument.
+
+## Run tests
+
+To run the tests, simply run `pytest` at the top level of the repository.

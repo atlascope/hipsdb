@@ -53,7 +53,7 @@ def initialize_logging() -> tuple[logging.Logger, logging.Formatter]:
 
 logger, formatter = initialize_logging()
 
-csv_filename_pattern = re.compile(r'^(?P<case_name>.*)_roi-(?P<roi>[0-9]+)_left-(?P<left>[0-9]+)_top-(?P<top>[0-9]+)_right-(?P<right>[0-9]+)_bottom-(?P<bottom>[0-9]+)\.csv$')
+csv_filename_pattern = re.compile(r'^(?P<image>.*)_roi-(?P<roi>[0-9]+)_left-(?P<left>[0-9]+)_top-(?P<top>[0-9]+)_right-(?P<right>[0-9]+)_bottom-(?P<bottom>[0-9]+)\.csv$')
 
 
 def get_json_fields(jsonfile: str) -> set[str]:
@@ -123,10 +123,11 @@ def convert_intfloat(value: str) -> int | None:
     """
     try:
         floatval = float(value)
-        intval = int(floatval)
-        if floatval != intval:
+
+        if math.isinf(floatval) or math.isnan(floatval) or (intval := int(floatval)) != floatval:
             logger.warning(f"Value {value} is not a valid intfloat")
             return None
+
         return intval
     except (ValueError, TypeError) as e:
         logger.warning(f"Invalid intfloat value: {value}")
@@ -146,7 +147,8 @@ def convert_float(value: str, ints: list[bool]) -> float | None:
         if value == "":
             return None
         floatval = float(value)
-        ints.append(floatval == int(floatval))
+        if not math.isinf(floatval) and not math.isnan(floatval):
+            ints.append(floatval == int(floatval))
         return floatval
     except (ValueError, TypeError) as e:
         logger.warning(f"Invalid float value: {value}")
@@ -227,13 +229,13 @@ def validate_hips_dir(data_dir: Path) -> bool:
     meta_dir = data_dir / "nucleiMeta"
     props_dir = data_dir / "nucleiProps"
     if not dir_exists(meta_dir) or not dir_exists(props_dir):
-        logger.error(f"Subdirectories {meta_dir} and {props_dir} must both exist")
+        logger.error(f"Subdirectories nucleiMeta and nucleiProps must both exist")
         return False
 
     # Make sure that each subdirectory contains the same set of files.
     filenames = check_same_filenames(meta_dir, props_dir)
     if filenames is None:
-        logger.error(f"Files in {meta_dir} and {props_dir} do not match")
+        logger.error(f"Files in nucleiMeta and nucleiProps do not match")
         return False
 
     # Validate each file in the directories.
@@ -246,10 +248,11 @@ def validate_hips_dir(data_dir: Path) -> bool:
         if not match:
             logger.warning(f"Filename {filename} does not match the pattern")
             success = False
+            continue
 
         # Check that the case name matches the directory name.
-        if match.group('case_name') != data_dir.name:
-            logger.warning(f"Case name for {filename} does not match directory name {data_dir.name}")
+        if match.group('image') != data_dir.name:
+            logger.warning(f"Image name for {filename} does not match directory name {data_dir.name}")
             success = False
 
         # Read the CSV files and check that the fields match the expected fields.
