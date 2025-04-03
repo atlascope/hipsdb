@@ -40,18 +40,25 @@ def test_file_regex_mismatch(caplog):
 def test_mismatched_name(caplog):
     success = hips_etl.validate_hips_dir(test_data_dir / "mismatched_name")
     assert not success
-    assert "Image name for wrong_name_roi-5_left-18001_top-45779_right-20049_bottom-47827.csv does not match directory name mismatched_name" in caplog.text
+    assert (
+        "Image name for wrong_name_roi-5_left-18001_top-45779_right-20049_bottom-47827.csv does not match directory name mismatched_name"
+        in caplog.text
+    )
 
 
 def test_missing_fields(caplog):
     success = hips_etl.validate_hips_dir(test_data_dir / "missing_meta_fields")
     assert not success
-    filename = "missing_meta_fields_roi-5_left-18001_top-45779_right-20049_bottom-47827.csv"
+    filename = (
+        "missing_meta_fields_roi-5_left-18001_top-45779_right-20049_bottom-47827.csv"
+    )
     assert f"Meta fields for {filename} do not match expected fields" in caplog.text
 
     success = hips_etl.validate_hips_dir(test_data_dir / "missing_props_fields")
     assert not success
-    filename = "missing_props_fields_roi-5_left-18001_top-45779_right-20049_bottom-47827.csv"
+    filename = (
+        "missing_props_fields_roi-5_left-18001_top-45779_right-20049_bottom-47827.csv"
+    )
     assert f"Props fields for {filename} do not match expected fields" in caplog.text
 
 
@@ -112,22 +119,35 @@ def test_duplicate_props_objectcodes(caplog):
 def test_mismatched_objectcodes(caplog):
     success = hips_etl.validate_hips_dir(test_data_dir / "mismatched_objectcodes")
     assert not success
-    filename = "mismatched_objectcodes_roi-5_left-18001_top-45779_right-20049_bottom-47827.csv"
-    assert f"ObjectCodes in {filename} do not match between meta and props" in caplog.text
+    filename = (
+        "mismatched_objectcodes_roi-5_left-18001_top-45779_right-20049_bottom-47827.csv"
+    )
+    assert (
+        f"ObjectCodes in {filename} do not match between meta and props" in caplog.text
+    )
 
 
 def test_broken_checks(caplog):
     success = hips_etl.validate_hips_dir(test_data_dir / "broken_checks")
     assert not success
 
-    assert "meta[1][Unconstrained.SuperClassifProbab.StromalSuperclass] is missing" in caplog.text
+    assert (
+        "meta[1][Unconstrained.SuperClassifProbab.StromalSuperclass] is missing"
+        in caplog.text
+    )
     assert "props[1][Nucleus.Haralick.IMC1.Range] is missing" in caplog.text
     assert "meta[1][Xmin] and props[1][Xmin] do not match" in caplog.text
     assert "meta[1][Ymin] and props[1][Ymin] do not match" in caplog.text
     assert "meta[1][Xmax] and props[1][Xmax] are not off by one" in caplog.text
     assert "meta[1][Ymax] and props[1][Ymax] are not off by one" in caplog.text
-    assert "meta[2][Identifier.CentroidX] is not the floor of props[2][Identifier.CentroidX]" in caplog.text
-    assert "meta[2][Identifier.CentroidY] is not the floor of props[2][Identifier.CentroidY]" in caplog.text
+    assert (
+        "meta[2][Identifier.CentroidX] is not the floor of props[2][Identifier.CentroidX]"
+        in caplog.text
+    )
+    assert (
+        "meta[2][Identifier.CentroidY] is not the floor of props[2][Identifier.CentroidY]"
+        in caplog.text
+    )
 
 
 @given(st.integers())
@@ -149,7 +169,12 @@ def test_convert_float_good_inputs(x: float):
         assert converted == x
 
 
-@given(st.text().filter(lambda s: not s.lstrip("-").lstrip("+").replace(".", "").isnumeric() and s.lower() not in ["inf", "-inf", "nan", "infinity", "-infinity"]))
+@given(
+    st.text().filter(
+        lambda s: not s.lstrip("-").lstrip("+").replace(".", "").isnumeric()
+        and s.lower() not in ["inf", "-inf", "nan", "infinity", "-infinity"]
+    )
+)
 def test_convert_float_bad_inputs(s: str):
     assert hips_etl.convert_float(s, []) is None
 
