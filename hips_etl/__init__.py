@@ -129,7 +129,7 @@ def convert_intfloat(value: str) -> int | None:
             return None
 
         return intval
-    except (ValueError, TypeError) as e:
+    except (ValueError, TypeError):
         logger.warning(f"Invalid intfloat value: {value}")
         return None
 
@@ -150,7 +150,7 @@ def convert_float(value: str, ints: list[bool]) -> float | None:
         if not math.isinf(floatval) and not math.isnan(floatval):
             ints.append(floatval == int(floatval))
         return floatval
-    except (ValueError, TypeError) as e:
+    except (ValueError, TypeError):
         logger.warning(f"Invalid float value: {value}")
         return None
 
@@ -159,7 +159,7 @@ def convert_int(value: str) -> int | None:
     """Convert a string to an integer, raising an exception for bad input."""
     try:
         return int(value)
-    except (ValueError, TypeError) as e:
+    except (ValueError, TypeError):
         logger.warning(f"Invalid int value: {value}")
         return None
 
@@ -229,13 +229,13 @@ def validate_hips_dir(data_dir: Path) -> bool:
     meta_dir = data_dir / "nucleiMeta"
     props_dir = data_dir / "nucleiProps"
     if not dir_exists(meta_dir) or not dir_exists(props_dir):
-        logger.error(f"Subdirectories nucleiMeta and nucleiProps must both exist")
+        logger.error("Subdirectories nucleiMeta and nucleiProps must both exist")
         return False
 
     # Make sure that each subdirectory contains the same set of files.
     filenames = check_same_filenames(meta_dir, props_dir)
     if filenames is None:
-        logger.error(f"Files in nucleiMeta and nucleiProps do not match")
+        logger.error("Files in nucleiMeta and nucleiProps do not match")
         return False
 
     # Validate each file in the directories.

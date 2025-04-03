@@ -22,7 +22,7 @@ def test_good_hips_dir(caplog):
 def test_missing_meta_dir(caplog):
     success = hips_etl.validate_hips_dir(test_data_dir / "missing_meta")
     assert not success
-    assert f"Subdirectories nucleiMeta and nucleiProps must both exist" in caplog.text
+    assert "Subdirectories nucleiMeta and nucleiProps must both exist" in caplog.text
 
 
 def test_nonmatching_files(caplog):
