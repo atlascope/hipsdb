@@ -2,8 +2,9 @@ import importlib
 import math
 
 from hypothesis import given, strategies as st
-import hips_etl.utils.types
-from hips_etl.utils.validation import validate_hips_dir
+from hips_etl.types import convert_float, convert_int, convert_intfloat
+from hips_etl.utils import get_object_mapping
+from hips_etl.validation import validate_hips_dir
 
 test_data_dir = importlib.resources.files("hips_etl") / "test_data"
 
@@ -78,7 +79,7 @@ def test_get_object_mapping():
             "name": "two",
         },
     ]
-    good_mapping = hips_etl.utils.validation.get_object_mapping(good_data)
+    good_mapping = get_object_mapping(good_data)
     assert good_mapping == {i: good_data[i] for i in range(len(good_data))}
 
     bad_data = [
@@ -99,7 +100,7 @@ def test_get_object_mapping():
             "name": "three",
         },
     ]
-    bad_mapping = hips_etl.utils.validation.get_object_mapping(bad_data)
+    bad_mapping = get_object_mapping(bad_data)
     assert bad_mapping is None
 
 
@@ -177,17 +178,17 @@ def test_skip_missing(caplog):
 
 @given(st.integers())
 def test_convert_int_good_inputs(n: int):
-    assert hips_etl.utils.types.convert_int(str(n)) == n
+    assert convert_int(str(n)) == n
 
 
 @given(st.text().filter(lambda s: not s.lstrip("-").isnumeric()))
 def test_convert_int_bad_inputs(s: str):
-    assert hips_etl.utils.types.convert_int(s) is None
+    assert convert_int(s) is None
 
 
 @given(st.floats())
 def test_convert_float_good_inputs(x: float):
-    converted = hips_etl.utils.types.convert_float(str(x), [])
+    converted = convert_float(str(x), [])
     if math.isnan(x):
         assert math.isnan(converted)
     else:
@@ -201,14 +202,14 @@ def test_convert_float_good_inputs(x: float):
     )
 )
 def test_convert_float_bad_inputs(s: str):
-    assert hips_etl.utils.types.convert_float(s, []) is None
+    assert convert_float(s, []) is None
 
 
 @given(st.floats(allow_infinity=False, allow_nan=False).map(math.floor))
 def test_convert_intfloat_good_inputs(x: float):
-    assert hips_etl.utils.types.convert_intfloat(str(x)) == x
+    assert convert_intfloat(str(x)) == x
 
 
 @given(st.floats().filter(lambda x: not x.is_integer()))
 def test_convert_intfloat_bad_inputs(x: float):
-    assert hips_etl.utils.types.convert_intfloat(str(x)) is None
+    assert convert_intfloat(str(x)) is None

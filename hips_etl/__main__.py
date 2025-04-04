@@ -2,7 +2,7 @@ from pathlib import Path
 import sys
 import click
 
-from hips_etl.utils.validation import validate_hips_dir
+from hips_etl.validation import validate_hips_dir
 
 
 @click.command()

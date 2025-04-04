@@ -11,8 +11,8 @@ from hips_etl.utils import (
     fields_match,
     get_object_mapping,
 )
-from hips_etl.utils.types import type_convert_meta, type_convert_props
-from hips_etl.utils.logging import initialize_logging
+from hips_etl.types import type_convert_meta, type_convert_props
+from hips_etl.logging import initialize_logging
 
 logger, formatter = initialize_logging()
 
