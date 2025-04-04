@@ -2,7 +2,7 @@ import importlib
 import math
 
 from hypothesis import given, strategies as st
-import hips_etl
+import hips_etl.utils.types
 
 test_data_dir = importlib.resources.files("hips_etl") / "test_data"
 
@@ -176,17 +176,17 @@ def test_skip_missing(caplog):
 
 @given(st.integers())
 def test_convert_int_good_inputs(n: int):
-    assert hips_etl.convert_int(str(n)) == n
+    assert hips_etl.utils.types.convert_int(str(n)) == n
 
 
 @given(st.text().filter(lambda s: not s.lstrip("-").isnumeric()))
 def test_convert_int_bad_inputs(s: str):
-    assert hips_etl.convert_int(s) is None
+    assert hips_etl.utils.types.convert_int(s) is None
 
 
 @given(st.floats())
 def test_convert_float_good_inputs(x: float):
-    converted = hips_etl.convert_float(str(x), [])
+    converted = hips_etl.utils.types.convert_float(str(x), [])
     if math.isnan(x):
         assert math.isnan(converted)
     else:
@@ -200,14 +200,14 @@ def test_convert_float_good_inputs(x: float):
     )
 )
 def test_convert_float_bad_inputs(s: str):
-    assert hips_etl.convert_float(s, []) is None
+    assert hips_etl.utils.types.convert_float(s, []) is None
 
 
 @given(st.floats(allow_infinity=False, allow_nan=False).map(math.floor))
 def test_convert_intfloat_good_inputs(x: float):
-    assert hips_etl.convert_intfloat(str(x)) == x
+    assert hips_etl.utils.types.convert_intfloat(str(x)) == x
 
 
 @given(st.floats().filter(lambda x: not x.is_integer()))
 def test_convert_intfloat_bad_inputs(x: float):
-    assert hips_etl.convert_intfloat(str(x)) is None
+    assert hips_etl.utils.types.convert_intfloat(str(x)) is None
