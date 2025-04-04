@@ -150,6 +150,30 @@ def test_broken_checks(caplog):
     )
 
 
+def test_missing_data(caplog):
+    success = hips_etl.validate_hips_dir(test_data_dir / "missing_data")
+    assert not success
+
+    assert "meta[4][ClassifProbab.NormalEpithelium] is missing" in caplog.text
+    assert "props[1][Nucleus.Haralick.IMC1.Range] is missing" in caplog.text
+
+
+def test_skip_missing(caplog):
+    success = hips_etl.validate_hips_dir(
+        test_data_dir / "missing_data", skip_missing=True
+    )
+    assert success
+
+    assert (
+        "meta[4][ClassifProbab.NormalEpithelium] is missing (skipping this record)"
+        in caplog.text
+    )
+    assert (
+        "props[1][Nucleus.Haralick.IMC1.Range] is missing (skipping this record)"
+        in caplog.text
+    )
+
+
 @given(st.integers())
 def test_convert_int_good_inputs(n: int):
     assert hips_etl.convert_int(str(n)) == n
