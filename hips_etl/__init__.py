@@ -235,7 +235,7 @@ def type_convert_props(rows: list[dict]) -> list[dict]:
     return type_convert_rows(rows, "props")
 
 
-def validate_hips_dir(data_dir: Path) -> bool:
+def validate_hips_dir(data_dir: Path, skip_missing: bool = False) -> bool:
     """Validate the data in a hips data directory."""
 
     success = True
@@ -320,13 +320,23 @@ def validate_hips_dir(data_dir: Path) -> bool:
             # Ensure no missing values in meta and props.
             for key in meta:
                 if meta[key] is None:
-                    logger.error(f"meta[{id}][{key}] is missing")
-                    success = False
+                    if not skip_missing:
+                        logger.error(f"meta[{id}][{key}] is missing")
+                        success = False
+                    else:
+                        logger.warning(
+                            f"meta[{id}][{key}] is missing (skipping this record)"
+                        )
 
             for key in props:
                 if props[key] is None:
-                    logger.error(f"props[{id}][{key}] is missing")
-                    success = False
+                    if not skip_missing:
+                        logger.error(f"props[{id}][{key}] is missing")
+                        success = False
+                    else:
+                        logger.warning(
+                            f"props[{id}][{key}] is missing (skipping this record)"
+                        )
 
             # Check that the [X|Y]min values match.
             if meta["Identifier.Xmin"] != props["Identifier.Xmin"]:
