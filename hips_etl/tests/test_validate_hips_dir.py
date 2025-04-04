@@ -3,42 +3,43 @@ import math
 
 from hypothesis import given, strategies as st
 import hips_etl.utils.types
+from hips_etl.utils.validation import validate_hips_dir
 
 test_data_dir = importlib.resources.files("hips_etl") / "test_data"
 
 
 def test_missing_hips_dir(caplog):
-    success = hips_etl.validate_hips_dir(test_data_dir / "nonexisting")
+    success = validate_hips_dir(test_data_dir / "nonexisting")
     assert not success
     assert "No such directory" in caplog.text
 
 
 def test_good_hips_dir(caplog):
-    success = hips_etl.validate_hips_dir(test_data_dir / "good")
+    success = validate_hips_dir(test_data_dir / "good")
     assert success
     assert "Data directory is valid" in caplog.text
 
 
 def test_missing_meta_dir(caplog):
-    success = hips_etl.validate_hips_dir(test_data_dir / "missing_meta")
+    success = validate_hips_dir(test_data_dir / "missing_meta")
     assert not success
     assert "Subdirectories nucleiMeta and nucleiProps must both exist" in caplog.text
 
 
 def test_nonmatching_files(caplog):
-    success = hips_etl.validate_hips_dir(test_data_dir / "nonmatching_files")
+    success = validate_hips_dir(test_data_dir / "nonmatching_files")
     assert not success
     assert "Files in nucleiMeta and nucleiProps do not match" in caplog.text
 
 
 def test_file_regex_mismatch(caplog):
-    success = hips_etl.validate_hips_dir(test_data_dir / "regex_mismatch")
+    success = validate_hips_dir(test_data_dir / "regex_mismatch")
     assert not success
     assert "Filename regex_mismatch.csv does not match the pattern" in caplog.text
 
 
 def test_mismatched_name(caplog):
-    success = hips_etl.validate_hips_dir(test_data_dir / "mismatched_name")
+    success = validate_hips_dir(test_data_dir / "mismatched_name")
     assert not success
     assert (
         "Image name for wrong_name_roi-5_left-18001_top-45779_right-20049_bottom-47827.csv does not match directory name mismatched_name"
@@ -47,14 +48,14 @@ def test_mismatched_name(caplog):
 
 
 def test_missing_fields(caplog):
-    success = hips_etl.validate_hips_dir(test_data_dir / "missing_meta_fields")
+    success = validate_hips_dir(test_data_dir / "missing_meta_fields")
     assert not success
     filename = (
         "missing_meta_fields_roi-5_left-18001_top-45779_right-20049_bottom-47827.csv"
     )
     assert f"Meta fields for {filename} do not match expected fields" in caplog.text
 
-    success = hips_etl.validate_hips_dir(test_data_dir / "missing_props_fields")
+    success = validate_hips_dir(test_data_dir / "missing_props_fields")
     assert not success
     filename = (
         "missing_props_fields_roi-5_left-18001_top-45779_right-20049_bottom-47827.csv"
@@ -77,7 +78,7 @@ def test_get_object_mapping():
             "name": "two",
         },
     ]
-    good_mapping = hips_etl.get_object_mapping(good_data)
+    good_mapping = hips_etl.utils.validation.get_object_mapping(good_data)
     assert good_mapping == {i: good_data[i] for i in range(len(good_data))}
 
     bad_data = [
@@ -98,26 +99,26 @@ def test_get_object_mapping():
             "name": "three",
         },
     ]
-    bad_mapping = hips_etl.get_object_mapping(bad_data)
+    bad_mapping = hips_etl.utils.validation.get_object_mapping(bad_data)
     assert bad_mapping is None
 
 
 def test_duplicate_meta_objectcodes(caplog):
-    success = hips_etl.validate_hips_dir(test_data_dir / "duplicate_objectcodes_meta")
+    success = validate_hips_dir(test_data_dir / "duplicate_objectcodes_meta")
     assert not success
     filename = "duplicate_objectcodes_meta_roi-5_left-18001_top-45779_right-20049_bottom-47827.csv"
     assert f"Duplicate ObjectCodes found in meta data for {filename}" in caplog.text
 
 
 def test_duplicate_props_objectcodes(caplog):
-    success = hips_etl.validate_hips_dir(test_data_dir / "duplicate_objectcodes_props")
+    success = validate_hips_dir(test_data_dir / "duplicate_objectcodes_props")
     assert not success
     filename = "duplicate_objectcodes_props_roi-5_left-18001_top-45779_right-20049_bottom-47827.csv"
     assert f"Duplicate ObjectCodes found in props data for {filename}" in caplog.text
 
 
 def test_mismatched_objectcodes(caplog):
-    success = hips_etl.validate_hips_dir(test_data_dir / "mismatched_objectcodes")
+    success = validate_hips_dir(test_data_dir / "mismatched_objectcodes")
     assert not success
     filename = (
         "mismatched_objectcodes_roi-5_left-18001_top-45779_right-20049_bottom-47827.csv"
@@ -128,7 +129,7 @@ def test_mismatched_objectcodes(caplog):
 
 
 def test_broken_checks(caplog):
-    success = hips_etl.validate_hips_dir(test_data_dir / "broken_checks")
+    success = validate_hips_dir(test_data_dir / "broken_checks")
     assert not success
 
     assert (
@@ -151,7 +152,7 @@ def test_broken_checks(caplog):
 
 
 def test_missing_data(caplog):
-    success = hips_etl.validate_hips_dir(test_data_dir / "missing_data")
+    success = validate_hips_dir(test_data_dir / "missing_data")
     assert not success
 
     assert "meta[4][ClassifProbab.NormalEpithelium] is missing" in caplog.text
@@ -159,7 +160,7 @@ def test_missing_data(caplog):
 
 
 def test_skip_missing(caplog):
-    success = hips_etl.validate_hips_dir(
+    success = validate_hips_dir(
         test_data_dir / "missing_data", skip_missing=True
     )
     assert success

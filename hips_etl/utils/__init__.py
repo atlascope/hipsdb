@@ -13,6 +13,14 @@ from .types import (
     type_convert_meta,
     type_convert_props,
 )
+from .validation import (
+    validate_hips_dir,
+    csv_filename_pattern,
+    get_json_fields,
+    common_fields,
+    meta_only_fields,
+    props_only_fields,
+)
 
 __all__ = [
     "dir_exists",
@@ -26,4 +34,10 @@ __all__ = [
     "type_convert_rows",
     "type_convert_meta",
     "type_convert_props",
+    "validate_hips_dir",
+    "csv_filename_pattern",
+    "get_json_fields",
+    "common_fields",
+    "meta_only_fields",
+    "props_only_fields",
 ]
