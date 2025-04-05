@@ -1,8 +1,7 @@
 import csv
 from pathlib import Path
-import logging
 
-logger = logging.getLogger(__name__)
+from .logging import logger
 
 
 def dir_exists(directory: Path) -> bool:

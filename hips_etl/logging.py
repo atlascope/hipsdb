@@ -3,7 +3,7 @@ import sys
 import blessings
 
 
-def initialize_logging() -> tuple[logging.Logger, logging.Formatter]:
+def _initialize() -> logging.Logger:
     term = blessings.Terminal()
 
     class HipsFormatter(logging.Formatter):
@@ -43,4 +43,10 @@ def initialize_logging() -> tuple[logging.Logger, logging.Formatter]:
     logger.addHandler(handler)
     logger.setLevel(logging.INFO)
 
-    return logger, formatter
+    logger.indent = formatter.indent
+    logger.dedent = formatter.dedent
+
+    return logger
+
+
+logger = _initialize()

@@ -12,9 +12,8 @@ from hips_etl.utils import (
     get_object_mapping,
 )
 from hips_etl.types import type_convert_meta, type_convert_props
-from hips_etl.logging import initialize_logging
 
-logger, formatter = initialize_logging()
+from .logging import logger
 
 csv_filename_pattern = re.compile(
     r"^(?P<image>.*)_roi-(?P<roi>[0-9]+)_left-(?P<left>[0-9]+)_top-(?P<top>[0-9]+)_right-(?P<right>[0-9]+)_bottom-(?P<bottom>[0-9]+)\.csv$"
@@ -64,7 +63,7 @@ def validate_hips_dir(data_dir: Path, skip_missing: bool = False) -> bool:
     # Validate each file in the directories.
     for filename in filenames:
         logger.info(f"Validating {filename}")
-        formatter.indent()
+        logger.indent()
 
         # Check that the filename matches the expected pattern.
         match = csv_filename_pattern.match(filename)
@@ -178,7 +177,7 @@ def validate_hips_dir(data_dir: Path, skip_missing: bool = False) -> bool:
                 )
                 success = False
 
-        formatter.dedent()
+        logger.dedent()
 
     if success:
         logger.info("Data directory is valid")

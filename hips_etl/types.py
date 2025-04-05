@@ -1,10 +1,9 @@
 import importlib.resources
 import json
 import math
-import logging
 from typing import Literal
 
-logger = logging.getLogger(__name__)
+from .logging import logger
 
 with open(importlib.resources.files(__package__) / "fields" / "types.json") as f:
     types = json.load(f)
