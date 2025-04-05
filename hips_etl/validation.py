@@ -23,7 +23,7 @@ csv_filename_pattern = re.compile(
 
 def get_json_fields(jsonfile: str) -> set[str]:
     try:
-        with open(importlib.resources.files("hips_etl") / "fields" / jsonfile) as f:
+        with open(importlib.resources.files(__package__) / "fields" / jsonfile) as f:
             fields = set(json.load(f))
     except (FileNotFoundError, json.JSONDecodeError) as e:
         logger.critical(f"Failed to load {jsonfile}: {e}")
