@@ -4,6 +4,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 def dir_exists(directory: Path) -> bool:
     """Check if a directory exists and is a directory."""
     return directory.exists() and directory.is_dir()

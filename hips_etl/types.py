@@ -6,7 +6,7 @@ from typing import Literal
 
 logger = logging.getLogger(__name__)
 
-with open(importlib.resources.files("hips_etl") / "fields" / "types.json") as f:
+with open(importlib.resources.files(__package__) / "fields" / "types.json") as f:
     types = json.load(f)
 
 

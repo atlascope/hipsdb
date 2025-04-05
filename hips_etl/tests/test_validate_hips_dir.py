@@ -161,9 +161,7 @@ def test_missing_data(caplog):
 
 
 def test_skip_missing(caplog):
-    success = validate_hips_dir(
-        test_data_dir / "missing_data", skip_missing=True
-    )
+    success = validate_hips_dir(test_data_dir / "missing_data", skip_missing=True)
     assert success
 
     assert (
