@@ -193,12 +193,15 @@ def test_convert_float_good_inputs(x: float):
         assert converted == x
 
 
-@given(
-    st.text().filter(
-        lambda s: not s.lstrip("-").lstrip("+").replace(".", "").isnumeric()
-        and s.lower() not in ["inf", "-inf", "nan", "infinity", "-infinity"]
-    )
-)
+def not_float(s: str) -> bool:
+    try:
+        float(s)
+        return False
+    except ValueError:
+        return True
+
+
+@given(st.text().filter(not_float))
 def test_convert_float_bad_inputs(s: str):
     assert convert_float(s, []) is None
 
