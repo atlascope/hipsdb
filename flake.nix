@@ -12,6 +12,7 @@
       in pkgs.mkShell {
         buildInputs = with pkgs; [
           python310Packages.python
+          uv
         ];
       };
   };
