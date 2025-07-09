@@ -21,3 +21,12 @@ validate a directory, supply a data directory as an argument.
 ## Run tests
 
 To run the tests, simply run `pytest` at the top level of the repository.
+
+## Run linting/formatting
+
+To run the linter, use the `ruff check` (to display linting errors) and `ruff
+check --fix` (to autofix them) commands.
+
+To run the formatter, use the `ruff format --check` or `ruff format --diff` (to
+indicate/display formatting issues) and `ruff format` (to autofix them)
+commands.
