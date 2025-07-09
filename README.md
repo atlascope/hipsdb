@@ -4,10 +4,13 @@ A Django app for storing and serving HiPS data
 ## Setup
 
 1. **Install project dependencies.** If you are using Nix, run `nix develop` to
-   install dependencies; otherwise, ensure that you have Python 3.10 installed.
-2. **Create a virtual environment.** Run `python -m venv ./.venv` followed by `.
-   ./.venv/bin/activate`.
-3. **Install Python dependencies.** Run `pip install -r requirements.txt`.
+   install dependencies; otherwise, ensure that you have Python 3.10 and `uv`
+   0.7.19 (or more recent) installed.
+2. **Install Python dependencies.** Run `uv sync --dev`. This will create a
+   virtual environment in the `.venv` directory.
+3. **Optional: Activate virtual environment.** Run `source .venv/bin/activate`
+   (or similar) to activate the virtual environment. This step is optional; you
+   can skip it and run Python commands by prefixing with `uv run` as well.
 
 ## Validate a HiPS data directory
 
