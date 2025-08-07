@@ -3,6 +3,7 @@ from django.db import models
 
 class Image(models.Model):
     name: str = models.CharField(max_length=255, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
 class ROI(models.Model):

@@ -16,7 +16,7 @@ def list():
     images = Image.objects.annotate(
         roi_count=Subquery(roi_count),
         nucleus_count=Subquery(nucleus_count)
-    ).values('id', 'name', 'roi_count', 'nucleus_count')
+    ).values('id', 'name', 'created_at', 'roi_count', 'nucleus_count')
 
     for image in images:
-        click.echo(f"{image['name']} (ID {image['id']}, {image['roi_count']} ROIs, {image['nucleus_count']} nuclei)")
+        click.echo(f"{image['name']} (ID {image['id']}, {image['roi_count']} ROIs, {image['nucleus_count']} nuclei, created at {image['created_at']})")
