@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 import sys
 
+from hipsdb.models import ROI, Nucleus
+
 from .logging import logger
 
 
@@ -68,3 +70,27 @@ def get_json_value(jsonfile: str):
         sys.exit(1)
 
     return value
+
+
+def random_nucleus(roi: ROI) -> Nucleus:
+    """Generate a random nucleus with dummy data."""
+    nucleus_fields = get_json_value("nucleus_fields.json")
+
+    data = {}
+    for field in nucleus_fields:
+        field_type = field["type"]
+        field_name = field["django_name"]
+
+        if field_type in ["int", "intfloat"]:
+            data[field_name] = 0
+        elif field_type == "float":
+            data[field_name] = 0.0
+        elif isinstance(field_type, list):
+            data[field_name] = field_type[0]
+        else:
+            raise ValueError(f"Unknown field type: {field_type} for field {field_name}")
+
+    return Nucleus(
+        roi=roi,
+        **data,
+    )
