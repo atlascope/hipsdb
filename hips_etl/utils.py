@@ -1,5 +1,8 @@
 import csv
+import importlib.resources
+import json
 from pathlib import Path
+import sys
 
 from .logging import logger
 
@@ -43,3 +46,25 @@ def get_object_mapping(rows: list[dict]) -> dict[int, dict] | None:
     mapping = {int(float(row["Identifier.ObjectCode"])): row for row in rows}
 
     return mapping if len(mapping) == len(rows) else None
+
+
+def get_json_fields(jsonfile: str) -> set[str]:
+    try:
+        with open(importlib.resources.files(__package__) / "fields" / jsonfile) as f:
+            fields = set(json.load(f))
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        logger.critical(f"Failed to load {jsonfile}: {e}")
+        sys.exit(1)
+
+    return fields
+
+
+def get_json_value(jsonfile: str):
+    try:
+        with open(importlib.resources.files(__package__) / "fields" / jsonfile) as f:
+            value = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        logger.critical(f"Failed to load {jsonfile}: {e}")
+        sys.exit(1)
+
+    return value

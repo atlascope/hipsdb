@@ -1,12 +1,10 @@
-import importlib.resources
-import json
 import re
-import sys
 from pathlib import Path
 import math
 from hips_etl.utils import (
     dir_exists,
     check_same_filenames,
+    get_json_fields,
     read_csv,
     fields_match,
     get_object_mapping,
@@ -18,17 +16,6 @@ from .logging import logger
 csv_filename_pattern = re.compile(
     r"^(?P<image>.*)_roi-(?P<roi>[0-9]+)_left-(?P<left>[0-9]+)_top-(?P<top>[0-9]+)_right-(?P<right>[0-9]+)_bottom-(?P<bottom>[0-9]+)\.csv$"
 )
-
-
-def get_json_fields(jsonfile: str) -> set[str]:
-    try:
-        with open(importlib.resources.files(__package__) / "fields" / jsonfile) as f:
-            fields = set(json.load(f))
-    except (FileNotFoundError, json.JSONDecodeError) as e:
-        logger.critical(f"Failed to load {jsonfile}: {e}")
-        sys.exit(1)
-
-    return fields
 
 
 # Load field definitions from JSON files
