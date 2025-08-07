@@ -12,11 +12,25 @@ A Django app for storing and serving HiPS data
    (or similar) to activate the virtual environment. This step is optional; you
    can skip it and run Python commands by prefixing with `uv run` as well.
 
-## Validate a HiPS data directory
+## Work with data
 
-To validate a HiPS data directory, you can run the validator as a Django
-management command with `./manage.py ingest`. That invocation will show a usage
-message; to validate a directory, supply a data directory as an argument.
+### Validate and ingest a HiPS data directory
+
+To validate and ingest a HiPS data directory, you can run the Django
+management command `./manage.py ingest`. That invocation will show a usage
+message; to validate/ingest a directory, supply a data directory as an argument.
+
+### List existing HiPS data
+
+Run the management command `./manage.py list` to see information about available
+images along with their creation time, ROI count, and nucleus count.
+
+### Delete HiPS data
+
+Run the management command `./manage.py delete` to delete images (along with
+their ROI and nucleus data). Supply at least one image ID (found by looking at
+the list command output, above), or use the `--all` flag to delete all images.
+Be careful!
 
 ## Run tests
 
