@@ -15,9 +15,6 @@ class ROI(models.Model):
     bottom: int = models.IntegerField()
 
 
-from django.db import models
-
-
 class Nucleus(models.Model):
     roi: ROI = models.ForeignKey(ROI, on_delete=models.CASCADE, related_name="nuclei")
 
