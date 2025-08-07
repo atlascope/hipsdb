@@ -1,0 +1,904 @@
+[
+  {
+    "db_name": "Identifier.ObjectCode",
+    "django_name": "Identifier_ObjectCode",
+    "type": "int"
+  },
+  {
+    "db_name": "Identifier.Xmin",
+    "django_name": "Identifier_Xmin",
+    "type": "intfloat"
+  },
+  {
+    "db_name": "Identifier.Ymin",
+    "django_name": "Identifier_Ymin",
+    "type": "intfloat"
+  },
+  {
+    "db_name": "Identifier.Xmax",
+    "django_name": "Identifier_Xmax",
+    "type": "intfloat"
+  },
+  {
+    "db_name": "Identifier.Ymax",
+    "django_name": "Identifier_Ymax",
+    "type": "intfloat"
+  },
+  {
+    "db_name": "Identifier.CentroidX",
+    "django_name": "Identifier_CentroidX",
+    "type": "intfloat"
+  },
+  {
+    "db_name": "Identifier.CentroidY",
+    "django_name": "Identifier_CentroidY",
+    "type": "intfloat"
+  },
+  {
+    "db_name": "Classif.StandardClass",
+    "django_name": "Classif_StandardClass",
+    "type": [
+      "ActiveStromalCellNOS",
+      "ActiveTILsCell",
+      "BACKGROUND",
+      "CancerEpithelium",
+      "NormalEpithelium",
+      "OtherCell",
+      "StromalCellNOS",
+      "TILsCell",
+      "UnknownOrAmbiguousCell"
+    ]
+  },
+  {
+    "db_name": "Classif.SuperClass",
+    "django_name": "Classif_SuperClass",
+    "type": [
+      "AmbiguousSuperclass",
+      "BACKGROUND",
+      "EpithelialSuperclass",
+      "OtherSuperclass",
+      "StromalSuperclass",
+      "TILsSuperclass"
+    ]
+  },
+  {
+    "db_name": "ClassifProbab.CancerEpithelium",
+    "django_name": "ClassifProbab_CancerEpithelium",
+    "type": "float"
+  },
+  {
+    "db_name": "ClassifProbab.StromalCellNOS",
+    "django_name": "ClassifProbab_StromalCellNOS",
+    "type": "float"
+  },
+  {
+    "db_name": "ClassifProbab.ActiveStromalCellNOS",
+    "django_name": "ClassifProbab_ActiveStromalCellNOS",
+    "type": "float"
+  },
+  {
+    "db_name": "ClassifProbab.TILsCell",
+    "django_name": "ClassifProbab_TILsCell",
+    "type": "float"
+  },
+  {
+    "db_name": "ClassifProbab.ActiveTILsCell",
+    "django_name": "ClassifProbab_ActiveTILsCell",
+    "type": "float"
+  },
+  {
+    "db_name": "ClassifProbab.NormalEpithelium",
+    "django_name": "ClassifProbab_NormalEpithelium",
+    "type": "float"
+  },
+  {
+    "db_name": "ClassifProbab.OtherCell",
+    "django_name": "ClassifProbab_OtherCell",
+    "type": "float"
+  },
+  {
+    "db_name": "ClassifProbab.UnknownOrAmbiguousCell",
+    "django_name": "ClassifProbab_UnknownOrAmbiguousCell",
+    "type": "float"
+  },
+  {
+    "db_name": "ClassifProbab.BACKGROUND",
+    "django_name": "ClassifProbab_BACKGROUND",
+    "type": "float"
+  },
+  {
+    "db_name": "SuperClassifProbab.EpithelialSuperclass",
+    "django_name": "SuperClassifProbab_EpithelialSuperclass",
+    "type": "float"
+  },
+  {
+    "db_name": "SuperClassifProbab.StromalSuperclass",
+    "django_name": "SuperClassifProbab_StromalSuperclass",
+    "type": "float"
+  },
+  {
+    "db_name": "SuperClassifProbab.TILsSuperclass",
+    "django_name": "SuperClassifProbab_TILsSuperclass",
+    "type": "float"
+  },
+  {
+    "db_name": "SuperClassifProbab.OtherSuperclass",
+    "django_name": "SuperClassifProbab_OtherSuperclass",
+    "type": "float"
+  },
+  {
+    "db_name": "SuperClassifProbab.AmbiguousSuperclass",
+    "django_name": "SuperClassifProbab_AmbiguousSuperclass",
+    "type": "float"
+  },
+  {
+    "db_name": "SuperClassifProbab.BACKGROUND",
+    "django_name": "SuperClassifProbab_BACKGROUND",
+    "type": "float"
+  },
+  {
+    "db_name": "Unconstrained.Identifier.Xmin",
+    "django_name": "Unconstrained_Identifier_Xmin",
+    "type": "intfloat"
+  },
+  {
+    "db_name": "Unconstrained.Identifier.Ymin",
+    "django_name": "Unconstrained_Identifier_Ymin",
+    "type": "intfloat"
+  },
+  {
+    "db_name": "Unconstrained.Identifier.Xmax",
+    "django_name": "Unconstrained_Identifier_Xmax",
+    "type": "intfloat"
+  },
+  {
+    "db_name": "Unconstrained.Identifier.Ymax",
+    "django_name": "Unconstrained_Identifier_Ymax",
+    "type": "intfloat"
+  },
+  {
+    "db_name": "Unconstrained.Identifier.CentroidX",
+    "django_name": "Unconstrained_Identifier_CentroidX",
+    "type": "intfloat"
+  },
+  {
+    "db_name": "Unconstrained.Identifier.CentroidY",
+    "django_name": "Unconstrained_Identifier_CentroidY",
+    "type": "intfloat"
+  },
+  {
+    "db_name": "Unconstrained.Classif.StandardClass",
+    "django_name": "Unconstrained_Classif_StandardClass",
+    "type": [
+      "ActiveStromalCellNOS",
+      "ActiveTILsCell",
+      "BACKGROUND",
+      "CancerEpithelium",
+      "NormalEpithelium",
+      "StromalCellNOS",
+      "TILsCell",
+      "UnknownOrAmbiguousCell"
+    ]
+  },
+  {
+    "db_name": "Unconstrained.Classif.SuperClass",
+    "django_name": "Unconstrained_Classif_SuperClass",
+    "type": [
+      "AmbiguousSuperclass",
+      "BACKGROUND",
+      "EpithelialSuperclass",
+      "StromalSuperclass",
+      "TILsSuperclass"
+    ]
+  },
+  {
+    "db_name": "Unconstrained.ClassifProbab.CancerEpithelium",
+    "django_name": "Unconstrained_ClassifProbab_CancerEpithelium",
+    "type": "float"
+  },
+  {
+    "db_name": "Unconstrained.ClassifProbab.StromalCellNOS",
+    "django_name": "Unconstrained_ClassifProbab_StromalCellNOS",
+    "type": "float"
+  },
+  {
+    "db_name": "Unconstrained.ClassifProbab.ActiveStromalCellNOS",
+    "django_name": "Unconstrained_ClassifProbab_ActiveStromalCellNOS",
+    "type": "float"
+  },
+  {
+    "db_name": "Unconstrained.ClassifProbab.TILsCell",
+    "django_name": "Unconstrained_ClassifProbab_TILsCell",
+    "type": "float"
+  },
+  {
+    "db_name": "Unconstrained.ClassifProbab.ActiveTILsCell",
+    "django_name": "Unconstrained_ClassifProbab_ActiveTILsCell",
+    "type": "float"
+  },
+  {
+    "db_name": "Unconstrained.ClassifProbab.NormalEpithelium",
+    "django_name": "Unconstrained_ClassifProbab_NormalEpithelium",
+    "type": "float"
+  },
+  {
+    "db_name": "Unconstrained.ClassifProbab.OtherCell",
+    "django_name": "Unconstrained_ClassifProbab_OtherCell",
+    "type": "float"
+  },
+  {
+    "db_name": "Unconstrained.ClassifProbab.UnknownOrAmbiguousCell",
+    "django_name": "Unconstrained_ClassifProbab_UnknownOrAmbiguousCell",
+    "type": "float"
+  },
+  {
+    "db_name": "Unconstrained.ClassifProbab.BACKGROUND",
+    "django_name": "Unconstrained_ClassifProbab_BACKGROUND",
+    "type": "float"
+  },
+  {
+    "db_name": "Unconstrained.SuperClassifProbab.EpithelialSuperclass",
+    "django_name": "Unconstrained_SuperClassifProbab_EpithelialSuperclass",
+    "type": "float"
+  },
+  {
+    "db_name": "Unconstrained.SuperClassifProbab.StromalSuperclass",
+    "django_name": "Unconstrained_SuperClassifProbab_StromalSuperclass",
+    "type": "float"
+  },
+  {
+    "db_name": "Unconstrained.SuperClassifProbab.TILsSuperclass",
+    "django_name": "Unconstrained_SuperClassifProbab_TILsSuperclass",
+    "type": "float"
+  },
+  {
+    "db_name": "Unconstrained.SuperClassifProbab.OtherSuperclass",
+    "django_name": "Unconstrained_SuperClassifProbab_OtherSuperclass",
+    "type": "float"
+  },
+  {
+    "db_name": "Unconstrained.SuperClassifProbab.AmbiguousSuperclass",
+    "django_name": "Unconstrained_SuperClassifProbab_AmbiguousSuperclass",
+    "type": "float"
+  },
+  {
+    "db_name": "Unconstrained.SuperClassifProbab.BACKGROUND",
+    "django_name": "Unconstrained_SuperClassifProbab_BACKGROUND",
+    "type": "float"
+  },
+  {
+    "db_name": "Identifier.WeightedCentroidX",
+    "django_name": "Identifier_WeightedCentroidX",
+    "type": "float"
+  },
+  {
+    "db_name": "Identifier.WeightedCentroidY",
+    "django_name": "Identifier_WeightedCentroidY",
+    "type": "float"
+  },
+  {
+    "db_name": "Orientation.Orientation",
+    "django_name": "Orientation_Orientation",
+    "type": "float"
+  },
+  {
+    "db_name": "Size.Area",
+    "django_name": "Size_Area",
+    "type": "intfloat"
+  },
+  {
+    "db_name": "Size.ConvexHullArea",
+    "django_name": "Size_ConvexHullArea",
+    "type": "intfloat"
+  },
+  {
+    "db_name": "Size.MajorAxisLength",
+    "django_name": "Size_MajorAxisLength",
+    "type": "float"
+  },
+  {
+    "db_name": "Size.MinorAxisLength",
+    "django_name": "Size_MinorAxisLength",
+    "type": "float"
+  },
+  {
+    "db_name": "Size.Perimeter",
+    "django_name": "Size_Perimeter",
+    "type": "float"
+  },
+  {
+    "db_name": "Shape.Circularity",
+    "django_name": "Shape_Circularity",
+    "type": "float"
+  },
+  {
+    "db_name": "Shape.Eccentricity",
+    "django_name": "Shape_Eccentricity",
+    "type": "float"
+  },
+  {
+    "db_name": "Shape.EquivalentDiameter",
+    "django_name": "Shape_EquivalentDiameter",
+    "type": "float"
+  },
+  {
+    "db_name": "Shape.Extent",
+    "django_name": "Shape_Extent",
+    "type": "float"
+  },
+  {
+    "db_name": "Shape.FractalDimension",
+    "django_name": "Shape_FractalDimension",
+    "type": "float"
+  },
+  {
+    "db_name": "Shape.MinorMajorAxisRatio",
+    "django_name": "Shape_MinorMajorAxisRatio",
+    "type": "float"
+  },
+  {
+    "db_name": "Shape.Solidity",
+    "django_name": "Shape_Solidity",
+    "type": "float"
+  },
+  {
+    "db_name": "Shape.HuMoments1",
+    "django_name": "Shape_HuMoments1",
+    "type": "float"
+  },
+  {
+    "db_name": "Shape.HuMoments2",
+    "django_name": "Shape_HuMoments2",
+    "type": "float"
+  },
+  {
+    "db_name": "Shape.HuMoments3",
+    "django_name": "Shape_HuMoments3",
+    "type": "float"
+  },
+  {
+    "db_name": "Shape.HuMoments4",
+    "django_name": "Shape_HuMoments4",
+    "type": "float"
+  },
+  {
+    "db_name": "Shape.HuMoments5",
+    "django_name": "Shape_HuMoments5",
+    "type": "float"
+  },
+  {
+    "db_name": "Shape.HuMoments6",
+    "django_name": "Shape_HuMoments6",
+    "type": "float"
+  },
+  {
+    "db_name": "Shape.HuMoments7",
+    "django_name": "Shape_HuMoments7",
+    "type": "float"
+  },
+  {
+    "db_name": "Shape.WeightedHuMoments1",
+    "django_name": "Shape_WeightedHuMoments1",
+    "type": "float"
+  },
+  {
+    "db_name": "Shape.WeightedHuMoments2",
+    "django_name": "Shape_WeightedHuMoments2",
+    "type": "float"
+  },
+  {
+    "db_name": "Shape.WeightedHuMoments3",
+    "django_name": "Shape_WeightedHuMoments3",
+    "type": "float"
+  },
+  {
+    "db_name": "Shape.WeightedHuMoments4",
+    "django_name": "Shape_WeightedHuMoments4",
+    "type": "float"
+  },
+  {
+    "db_name": "Shape.WeightedHuMoments5",
+    "django_name": "Shape_WeightedHuMoments5",
+    "type": "float"
+  },
+  {
+    "db_name": "Shape.WeightedHuMoments6",
+    "django_name": "Shape_WeightedHuMoments6",
+    "type": "float"
+  },
+  {
+    "db_name": "Shape.WeightedHuMoments7",
+    "django_name": "Shape_WeightedHuMoments7",
+    "type": "float"
+  },
+  {
+    "db_name": "Shape.FSD1",
+    "django_name": "Shape_FSD1",
+    "type": "float"
+  },
+  {
+    "db_name": "Shape.FSD2",
+    "django_name": "Shape_FSD2",
+    "type": "float"
+  },
+  {
+    "db_name": "Shape.FSD3",
+    "django_name": "Shape_FSD3",
+    "type": "float"
+  },
+  {
+    "db_name": "Shape.FSD4",
+    "django_name": "Shape_FSD4",
+    "type": "float"
+  },
+  {
+    "db_name": "Shape.FSD5",
+    "django_name": "Shape_FSD5",
+    "type": "float"
+  },
+  {
+    "db_name": "Shape.FSD6",
+    "django_name": "Shape_FSD6",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Intensity.Min",
+    "django_name": "Nucleus_Intensity_Min",
+    "type": "intfloat"
+  },
+  {
+    "db_name": "Nucleus.Intensity.Max",
+    "django_name": "Nucleus_Intensity_Max",
+    "type": "intfloat"
+  },
+  {
+    "db_name": "Nucleus.Intensity.Mean",
+    "django_name": "Nucleus_Intensity_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Intensity.Median",
+    "django_name": "Nucleus_Intensity_Median",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Intensity.MeanMedianDiff",
+    "django_name": "Nucleus_Intensity_MeanMedianDiff",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Intensity.Std",
+    "django_name": "Nucleus_Intensity_Std",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Intensity.IQR",
+    "django_name": "Nucleus_Intensity_IQR",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Intensity.MAD",
+    "django_name": "Nucleus_Intensity_MAD",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Intensity.Skewness",
+    "django_name": "Nucleus_Intensity_Skewness",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Intensity.Kurtosis",
+    "django_name": "Nucleus_Intensity_Kurtosis",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Intensity.HistEnergy",
+    "django_name": "Nucleus_Intensity_HistEnergy",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Intensity.HistEntropy",
+    "django_name": "Nucleus_Intensity_HistEntropy",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Intensity.Min",
+    "django_name": "Cytoplasm_Intensity_Min",
+    "type": "intfloat"
+  },
+  {
+    "db_name": "Cytoplasm.Intensity.Max",
+    "django_name": "Cytoplasm_Intensity_Max",
+    "type": "intfloat"
+  },
+  {
+    "db_name": "Cytoplasm.Intensity.Mean",
+    "django_name": "Cytoplasm_Intensity_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Intensity.Median",
+    "django_name": "Cytoplasm_Intensity_Median",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Intensity.MeanMedianDiff",
+    "django_name": "Cytoplasm_Intensity_MeanMedianDiff",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Intensity.Std",
+    "django_name": "Cytoplasm_Intensity_Std",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Intensity.IQR",
+    "django_name": "Cytoplasm_Intensity_IQR",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Intensity.MAD",
+    "django_name": "Cytoplasm_Intensity_MAD",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Intensity.Skewness",
+    "django_name": "Cytoplasm_Intensity_Skewness",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Intensity.Kurtosis",
+    "django_name": "Cytoplasm_Intensity_Kurtosis",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Intensity.HistEnergy",
+    "django_name": "Cytoplasm_Intensity_HistEnergy",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Intensity.HistEntropy",
+    "django_name": "Cytoplasm_Intensity_HistEntropy",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Gradient.Mag.Mean",
+    "django_name": "Nucleus_Gradient_Mag_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Gradient.Mag.Std",
+    "django_name": "Nucleus_Gradient_Mag_Std",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Gradient.Mag.Skewness",
+    "django_name": "Nucleus_Gradient_Mag_Skewness",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Gradient.Mag.Kurtosis",
+    "django_name": "Nucleus_Gradient_Mag_Kurtosis",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Gradient.Mag.HistEntropy",
+    "django_name": "Nucleus_Gradient_Mag_HistEntropy",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Gradient.Mag.HistEnergy",
+    "django_name": "Nucleus_Gradient_Mag_HistEnergy",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Gradient.Canny.Sum",
+    "django_name": "Nucleus_Gradient_Canny_Sum",
+    "type": "intfloat"
+  },
+  {
+    "db_name": "Nucleus.Gradient.Canny.Mean",
+    "django_name": "Nucleus_Gradient_Canny_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Gradient.Mag.Mean",
+    "django_name": "Cytoplasm_Gradient_Mag_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Gradient.Mag.Std",
+    "django_name": "Cytoplasm_Gradient_Mag_Std",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Gradient.Mag.Skewness",
+    "django_name": "Cytoplasm_Gradient_Mag_Skewness",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Gradient.Mag.Kurtosis",
+    "django_name": "Cytoplasm_Gradient_Mag_Kurtosis",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Gradient.Mag.HistEntropy",
+    "django_name": "Cytoplasm_Gradient_Mag_HistEntropy",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Gradient.Mag.HistEnergy",
+    "django_name": "Cytoplasm_Gradient_Mag_HistEnergy",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Gradient.Canny.Sum",
+    "django_name": "Cytoplasm_Gradient_Canny_Sum",
+    "type": "intfloat"
+  },
+  {
+    "db_name": "Cytoplasm.Gradient.Canny.Mean",
+    "django_name": "Cytoplasm_Gradient_Canny_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Haralick.ASM.Mean",
+    "django_name": "Nucleus_Haralick_ASM_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Haralick.ASM.Range",
+    "django_name": "Nucleus_Haralick_ASM_Range",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Haralick.Contrast.Mean",
+    "django_name": "Nucleus_Haralick_Contrast_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Haralick.Contrast.Range",
+    "django_name": "Nucleus_Haralick_Contrast_Range",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Haralick.Correlation.Mean",
+    "django_name": "Nucleus_Haralick_Correlation_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Haralick.Correlation.Range",
+    "django_name": "Nucleus_Haralick_Correlation_Range",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Haralick.SumOfSquares.Mean",
+    "django_name": "Nucleus_Haralick_SumOfSquares_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Haralick.SumOfSquares.Range",
+    "django_name": "Nucleus_Haralick_SumOfSquares_Range",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Haralick.IDM.Mean",
+    "django_name": "Nucleus_Haralick_IDM_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Haralick.IDM.Range",
+    "django_name": "Nucleus_Haralick_IDM_Range",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Haralick.SumAverage.Mean",
+    "django_name": "Nucleus_Haralick_SumAverage_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Haralick.SumAverage.Range",
+    "django_name": "Nucleus_Haralick_SumAverage_Range",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Haralick.SumVariance.Mean",
+    "django_name": "Nucleus_Haralick_SumVariance_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Haralick.SumVariance.Range",
+    "django_name": "Nucleus_Haralick_SumVariance_Range",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Haralick.SumEntropy.Mean",
+    "django_name": "Nucleus_Haralick_SumEntropy_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Haralick.SumEntropy.Range",
+    "django_name": "Nucleus_Haralick_SumEntropy_Range",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Haralick.Entropy.Mean",
+    "django_name": "Nucleus_Haralick_Entropy_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Haralick.Entropy.Range",
+    "django_name": "Nucleus_Haralick_Entropy_Range",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Haralick.DifferenceVariance.Mean",
+    "django_name": "Nucleus_Haralick_DifferenceVariance_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Haralick.DifferenceVariance.Range",
+    "django_name": "Nucleus_Haralick_DifferenceVariance_Range",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Haralick.DifferenceEntropy.Mean",
+    "django_name": "Nucleus_Haralick_DifferenceEntropy_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Haralick.DifferenceEntropy.Range",
+    "django_name": "Nucleus_Haralick_DifferenceEntropy_Range",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Haralick.IMC1.Mean",
+    "django_name": "Nucleus_Haralick_IMC1_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Haralick.IMC1.Range",
+    "django_name": "Nucleus_Haralick_IMC1_Range",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Haralick.IMC2.Mean",
+    "django_name": "Nucleus_Haralick_IMC2_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Nucleus.Haralick.IMC2.Range",
+    "django_name": "Nucleus_Haralick_IMC2_Range",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Haralick.ASM.Mean",
+    "django_name": "Cytoplasm_Haralick_ASM_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Haralick.ASM.Range",
+    "django_name": "Cytoplasm_Haralick_ASM_Range",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Haralick.Contrast.Mean",
+    "django_name": "Cytoplasm_Haralick_Contrast_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Haralick.Contrast.Range",
+    "django_name": "Cytoplasm_Haralick_Contrast_Range",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Haralick.Correlation.Mean",
+    "django_name": "Cytoplasm_Haralick_Correlation_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Haralick.Correlation.Range",
+    "django_name": "Cytoplasm_Haralick_Correlation_Range",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Haralick.SumOfSquares.Mean",
+    "django_name": "Cytoplasm_Haralick_SumOfSquares_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Haralick.SumOfSquares.Range",
+    "django_name": "Cytoplasm_Haralick_SumOfSquares_Range",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Haralick.IDM.Mean",
+    "django_name": "Cytoplasm_Haralick_IDM_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Haralick.IDM.Range",
+    "django_name": "Cytoplasm_Haralick_IDM_Range",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Haralick.SumAverage.Mean",
+    "django_name": "Cytoplasm_Haralick_SumAverage_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Haralick.SumAverage.Range",
+    "django_name": "Cytoplasm_Haralick_SumAverage_Range",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Haralick.SumVariance.Mean",
+    "django_name": "Cytoplasm_Haralick_SumVariance_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Haralick.SumVariance.Range",
+    "django_name": "Cytoplasm_Haralick_SumVariance_Range",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Haralick.SumEntropy.Mean",
+    "django_name": "Cytoplasm_Haralick_SumEntropy_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Haralick.SumEntropy.Range",
+    "django_name": "Cytoplasm_Haralick_SumEntropy_Range",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Haralick.Entropy.Mean",
+    "django_name": "Cytoplasm_Haralick_Entropy_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Haralick.Entropy.Range",
+    "django_name": "Cytoplasm_Haralick_Entropy_Range",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Haralick.DifferenceVariance.Mean",
+    "django_name": "Cytoplasm_Haralick_DifferenceVariance_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Haralick.DifferenceVariance.Range",
+    "django_name": "Cytoplasm_Haralick_DifferenceVariance_Range",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Haralick.DifferenceEntropy.Mean",
+    "django_name": "Cytoplasm_Haralick_DifferenceEntropy_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Haralick.DifferenceEntropy.Range",
+    "django_name": "Cytoplasm_Haralick_DifferenceEntropy_Range",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Haralick.IMC1.Mean",
+    "django_name": "Cytoplasm_Haralick_IMC1_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Haralick.IMC1.Range",
+    "django_name": "Cytoplasm_Haralick_IMC1_Range",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Haralick.IMC2.Mean",
+    "django_name": "Cytoplasm_Haralick_IMC2_Mean",
+    "type": "float"
+  },
+  {
+    "db_name": "Cytoplasm.Haralick.IMC2.Range",
+    "django_name": "Cytoplasm_Haralick_IMC2_Range",
+    "type": "float"
+  }
+]

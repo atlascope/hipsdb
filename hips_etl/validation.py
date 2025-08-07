@@ -1,12 +1,10 @@
-import importlib.resources
-import json
 import re
-import sys
 from pathlib import Path
 import math
 from hips_etl.utils import (
     dir_exists,
     check_same_filenames,
+    get_json_fields,
     read_csv,
     fields_match,
     get_object_mapping,
@@ -20,27 +18,47 @@ csv_filename_pattern = re.compile(
 )
 
 
-def get_json_fields(jsonfile: str) -> set[str]:
-    try:
-        with open(importlib.resources.files(__package__) / "fields" / jsonfile) as f:
-            fields = set(json.load(f))
-    except (FileNotFoundError, json.JSONDecodeError) as e:
-        logger.critical(f"Failed to load {jsonfile}: {e}")
-        sys.exit(1)
-
-    return fields
-
-
 # Load field definitions from JSON files
 common_fields = get_json_fields("common.json")
 meta_only_fields = get_json_fields("meta_only.json")
 props_only_fields = get_json_fields("props_only.json")
 
 
+def construct_nucleus(meta: dict, props: dict) -> dict:
+    """Construct a nucleus dictionary from meta and props dictionaries."""
+
+    def django_field_name(field_name: str) -> str:
+        """Convert a field name to a Django model field name."""
+        return field_name.replace('.', '_')
+
+    nucleus_common = {
+        django_field_name("Identifier.ObjectCode"): meta["Identifier.ObjectCode"],
+        django_field_name("Identifier.Xmin"): meta["Identifier.Xmin"],
+        django_field_name("Identifier.Ymin"): meta["Identifier.Ymin"],
+        django_field_name("Identifier.Xmax"): props["Identifier.Xmax"],
+        django_field_name("Identifier.Ymax"): props["Identifier.Ymax"],
+        django_field_name("Identifier.CentroidX"): meta["Identifier.CentroidX"],
+        django_field_name("Identifier.CentroidY"): meta["Identifier.CentroidY"],
+    }
+
+    nucleus_meta = {django_field_name(k): v for k, v in meta.items() if k in meta_only_fields}
+
+    nucleus_props = {django_field_name(k): v for k, v in props.items() if k in props_only_fields}
+    del nucleus_props['slide']
+    del nucleus_props['roiname']
+
+    return nucleus_common | nucleus_meta | nucleus_props
+
+
 def validate_hips_dir(data_dir: Path, skip_missing: bool = False) -> bool:
     """Validate the data in a hips data directory."""
 
     success = True
+
+    modeled = {
+        "image": data_dir.name,
+        "roi": [],
+    }
 
     # Check that the data directory exists and is a directory.
     if not dir_exists(data_dir):
@@ -71,6 +89,16 @@ def validate_hips_dir(data_dir: Path, skip_missing: bool = False) -> bool:
             logger.warning(f"Filename {filename} does not match the pattern")
             success = False
             continue
+
+        # Create an ROI entry for the modeled data.
+        roi = {
+            "name": match.group("roi"),
+            "left": int(match.group("left")),
+            "top": int(match.group("top")),
+            "right": int(match.group("right")),
+            "bottom": int(match.group("bottom")),
+            "nuclei": [],
+        }
 
         # Check that the case name matches the directory name.
         if match.group("image") != data_dir.name:
@@ -118,6 +146,7 @@ def validate_hips_dir(data_dir: Path, skip_missing: bool = False) -> bool:
         for id in meta_dict.keys():
             meta = meta_dict[id]
             props = props_dict[id]
+            skip = False
 
             # Ensure no missing values in meta and props.
             for key in meta:
@@ -129,6 +158,7 @@ def validate_hips_dir(data_dir: Path, skip_missing: bool = False) -> bool:
                         logger.warning(
                             f"meta[{id}][{key}] is missing (skipping this record)"
                         )
+                        skip = True
 
             for key in props:
                 if props[key] is None:
@@ -139,6 +169,10 @@ def validate_hips_dir(data_dir: Path, skip_missing: bool = False) -> bool:
                         logger.warning(
                             f"props[{id}][{key}] is missing (skipping this record)"
                         )
+                        skip = True
+
+            if skip:
+                continue
 
             # Check that the [X|Y]min values match.
             if meta["Identifier.Xmin"] != props["Identifier.Xmin"]:
@@ -177,10 +211,15 @@ def validate_hips_dir(data_dir: Path, skip_missing: bool = False) -> bool:
                 )
                 success = False
 
+            # Add the nucleus data to the ROI.
+            nucleus = construct_nucleus(meta, props)
+            roi["nuclei"].append(nucleus)
+
+        modeled["roi"].append(roi)
         logger.dedent()
 
     if success:
         logger.info("Data directory is valid")
     else:
         logger.error("Data directory is invalid")
-    return success
+    return modeled if success else None
