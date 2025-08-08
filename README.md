@@ -12,25 +12,40 @@ A Django app for storing and serving HiPS data
    (or similar) to activate the virtual environment. This step is optional; you
    can skip it and run Python commands by prefixing with `uv run` as well.
 
-## Work with data
+## Working with data
 
-### Validate and ingest a HiPS data directory
+### Management commands
+
+#### Validate and ingest a HiPS data directory
 
 To validate and ingest a HiPS data directory, you can run the Django
 management command `./manage.py ingest`. That invocation will show a usage
 message; to validate/ingest a directory, supply a data directory as an argument.
 
-### List existing HiPS data
+#### List existing HiPS data
 
 Run the management command `./manage.py list` to see information about available
 images along with their creation time, ROI count, and nucleus count.
 
-### Delete HiPS data
+#### Delete HiPS data
 
 Run the management command `./manage.py delete` to delete images (along with
 their ROI and nucleus data). Supply at least one image ID (found by looking at
 the list command output, above), or use the `--all` flag to delete all images.
 Be careful!
+
+### REST API
+
+Go to http://localhost:8000/hipsdb/docs to see a Swagger page describing the
+API. The endpoints are as follows:
+
+- `GET /hipsdb/images`: retrieve a list of all images in the DB.
+- `GET /hipsdb/images/{image_id}`: retrieve a single image.
+- `GET /hipsdb/images/{image_id}/rois`: retrieve a list of all ROIs for a given
+  image.
+- `GET /hipsdb/images/{image_id}/rois/{roi_id}/nuclei`: retrieve a list of
+  nuclei data. Supply a `fields` query parameter to specify which fields you
+  want to see in the response (can be supplied multiple times).
 
 ## Run tests
 
