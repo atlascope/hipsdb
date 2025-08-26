@@ -79,6 +79,8 @@ def validate_hips_dir(data_dir: Path, skip_missing: bool = False) -> bool:
         return False
 
     # Validate each file in the directories.
+    skipped = 0
+    total = 0
     for filename in filenames:
         logger.info(f"Validating {filename}")
         logger.indent()
@@ -143,6 +145,7 @@ def validate_hips_dir(data_dir: Path, skip_missing: bool = False) -> bool:
             return False
 
         # Check the data integrity properties between meta and props.
+        total += len(meta_dict)
         for id in meta_dict.keys():
             meta = meta_dict[id]
             props = props_dict[id]
@@ -172,6 +175,7 @@ def validate_hips_dir(data_dir: Path, skip_missing: bool = False) -> bool:
                         skip = True
 
             if skip:
+                skipped += 1
                 continue
 
             # Check that the [X|Y]min values match.
@@ -217,6 +221,8 @@ def validate_hips_dir(data_dir: Path, skip_missing: bool = False) -> bool:
 
         modeled["roi"].append(roi)
         logger.dedent()
+
+    logger.info(f"Processed {total} nuclei (skipped {skipped})")
 
     if success:
         logger.info("Data directory is valid")
